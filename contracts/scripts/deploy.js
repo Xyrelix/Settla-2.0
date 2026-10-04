@@ -1,6 +1,6 @@
 const { ethers, network } = require("hardhat");
 const fs = require("fs");
-const path = require("path");
+const { deploymentPath, verifySettla } = require("./verify");
 
 async function main() {
   const usdc = process.env.USDC_ADDRESS;
@@ -18,11 +18,10 @@ async function main() {
   const address = await settla.getAddress();
   console.log("Settla deployed to:", address);
 
-  const dir = path.join(__dirname, "..", "deployments");
-  const file = network.name === "arcMainnet" ? "arc-mainnet.json" : `${network.name}.json`;
-  fs.mkdirSync(dir, { recursive: true });
+  const file = deploymentPath(network.name);
+  fs.mkdirSync(require("path").dirname(file), { recursive: true });
   fs.writeFileSync(
-    path.join(dir, file),
+    file,
     JSON.stringify(
       {
         network: network.name,
@@ -35,6 +34,12 @@ async function main() {
       2,
     ) + "\n",
   );
+  console.log("Recorded in", file);
+
+  if (network.config.chainId === 5042 || network.config.chainId === 5042002) {
+    console.log("Verifying source on the explorer...");
+    await verifySettla(address, usdc);
+  }
 }
 
 main().catch((e) => {
