@@ -13,7 +13,8 @@
 Verify these against https://docs.arc.io before deploying. Other providers (Blockdaemon, dRPC,
 QuickNode) also run mainnet endpoints if the primary one is slow.
 
-Testnet (for dry runs): chain ID `5042002`. Submissions to the grant must be mainnet, but a
+Testnet (for dry runs): chain ID `5042002`, RPC `https://rpc.testnet.arc.io`, explorer
+`https://explorer.testnet.arc.io`, faucet `https://faucet.circle.com`. Submissions to the grant must be mainnet, but a
 testnet pass first is a cheap way to catch contract bugs.
 
 ## USDC on Arc
@@ -23,7 +24,7 @@ testnet pass first is a cheap way to catch contract bugs.
 | ERC-20 USDC interface | `0x3600000000000000000000000000000000000000`                   |
 | ERC-20 decimals       | 6                                                              |
 | Native gas token      | USDC                                                           |
-| Native gas decimals   | 18 (per Chainstack docs; one other provider lists 6, so check) |
+| Native gas decimals   | 18 (confirmed in docs.arc.io)                                  |
 
 Rules of thumb:
 
@@ -44,7 +45,7 @@ fake balances.
 
 | Function                                                          | Who                   | Effect                                       |
 | ----------------------------------------------------------------- | --------------------- | -------------------------------------------- |
-| `createInvoice(uint256 amount, string memo) returns (uint256 id)` | anyone                | Opens an invoice owned by the caller         |
+| `createInvoice(uint256 amount, string memo) returns (uint256 id)` | anyone                | Opens an invoice owned by the caller (memo ≤ 280 bytes) |
 | `pay(uint256 id)`                                                 | anyone with allowance | Transfers USDC payer to merchant, marks Paid |
 | `cancel(uint256 id)`                                              | merchant              | Cancels an Open invoice                      |
 | `getInvoice(uint256 id)`                                          | view                  | Returns the invoice struct                   |
@@ -64,7 +65,7 @@ The payer must `approve(settla, amount)` on the USDC contract before calling `pa
 ```ts
 import { createWalletClient, createPublicClient, http, parseUnits } from "viem";
 import { arc } from "./arc";
-import abi from "./settla.abi.json";
+import { settlaAbi as abi } from "./settla.abi"; // typed, from export-abi
 
 const wallet = createWalletClient({ chain: arc, transport: http(), account });
 const hash = await wallet.writeContract({
@@ -90,18 +91,22 @@ const paid = inv.status === 2;
 
 ### Merchant-side listener (Node.js)
 
-`contracts/scripts/listen.js` fires whenever any invoice settles. Filter by `merchant` to
-trigger fulfilment, send a receipt email, or update your own database.
+`contracts/scripts/listen.js` fires whenever an invoice settles. Set `MERCHANT_ADDRESS` to
+only hear about your own invoices, then trigger fulfilment, send a receipt email, or update your own database.
 
 ```js
 require("dotenv").config();
 const { ethers } = require("ethers");
 const abi = require("../../web/src/lib/settla.abi.json");
 
-const provider = new ethers.JsonRpcProvider(process.env.ARC_MAINNET_RPC);
-const settla = new ethers.Contract(process.env.SETTLA_ADDRESS, abi, provider);
+const { ARC_MAINNET_RPC, SETTLA_ADDRESS, MERCHANT_ADDRESS } = process.env;
+const provider = new ethers.JsonRpcProvider(ARC_MAINNET_RPC);
+const settla = new ethers.Contract(SETTLA_ADDRESS, abi, provider);
 
-settla.on("Settled", (id, merchant, payer, amount, event) => {
+// merchant is indexed on Settled, so filter on it when MERCHANT_ADDRESS is set.
+const filter = settla.filters.Settled(null, MERCHANT_ADDRESS || null);
+
+settla.on(filter, (id, merchant, payer, amount, event) => {
   console.log(
     `Invoice #${id} paid by ${payer}: ${ethers.formatUnits(amount, 6)} USDC`,
   );
@@ -137,7 +142,7 @@ to Arc if needed, and runs approve then pay.
 ## Security
 
 - Deploy from a fresh wallet funded with only what gas requires.
-- Never commit `.env`; `.gitignore` must list `.env`, `.env.local`, `node_modules`, `artifacts`, `cache`, `.next`.
+- Never commit `.env`; `.gitignore` lists `.env`, `.env.*` (except `.env.example`), `node_modules`, `artifacts`, `cache`, `.next`.
 - The contract is unaudited. Treat it as a proof of concept, not production money-handling.
 
 ## Arc Microgrants submission checklist

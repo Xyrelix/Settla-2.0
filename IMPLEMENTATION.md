@@ -9,6 +9,8 @@
 - **Checks-effects-interactions.** Invoice state flips to `Paid` before the transfer, so a
   reentrant call finds the invoice already closed.
 - **Minimal surface.** Three write functions, two views, three events.
+- **Bounded memos.** Memos are capped at 280 bytes (`MAX_MEMO_LENGTH`) so invoices stay cheap to
+  store and read.
 
 ## Contract: `contracts/contracts/Settla.sol`
 
@@ -34,6 +36,8 @@ contract Settla {
         string memo;
     }
 
+    uint256 public constant MAX_MEMO_LENGTH = 280;
+
     IERC20 public immutable usdc;
     uint256 public nextId = 1;
 
@@ -44,17 +48,21 @@ contract Settla {
     event Settled(uint256 indexed id, address indexed merchant, address indexed payer, uint256 amount);
     event InvoiceCancelled(uint256 indexed id);
 
+    error ZeroAddress();
     error ZeroAmount();
+    error MemoTooLong();
     error NotOpen();
     error NotMerchant();
     error TransferFailed();
 
     constructor(address usdc_) {
+        if (usdc_ == address(0)) revert ZeroAddress();
         usdc = IERC20(usdc_);
     }
 
     function createInvoice(uint256 amount, string calldata memo) external returns (uint256 id) {
         if (amount == 0) revert ZeroAmount();
+        if (bytes(memo).length > MAX_MEMO_LENGTH) revert MemoTooLong();
         id = nextId++;
         _invoices[id] = Invoice(msg.sender, address(0), amount, uint64(block.timestamp), 0, Status.Open, memo);
         _byMerchant[msg.sender].push(id);
@@ -91,288 +99,55 @@ contract Settla {
 
 ## Contract tooling
 
-`contracts/hardhat.config.js`:
+| File | Purpose |
+| ---- | ------- |
+| `hardhat.config.js` | Solidity 0.8.24 with optimizer; `arcMainnet` (5042) and `arcTestnet` (5042002) networks |
+| `scripts/deploy.js` | Deploys `Settla(USDC_ADDRESS)` and writes `deployments/<network>.json` (`arc-mainnet.json` on mainnet) |
+| `scripts/export-abi.js` | Writes the ABI to `web/src/lib/settla.abi.json` (Node) and `settla.abi.ts` (`as const`, typed for viem/wagmi) |
+| `scripts/listen.js` | Logs `Settled` events, optionally filtered to `MERCHANT_ADDRESS` |
+| `contracts/mocks/MockUSDC.sol` | 6-decimal ERC-20 used only by tests |
 
-```js
-require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config();
-
-const { ARC_MAINNET_RPC, DEPLOYER_PRIVATE_KEY } = process.env;
-
-module.exports = {
-  solidity: {
-    version: "0.8.24",
-    settings: { optimizer: { enabled: true, runs: 200 } },
-    // If deployment fails with an invalid-opcode error, add: evmVersion: "paris"
-  },
-  networks: {
-    arcMainnet: {
-      url: ARC_MAINNET_RPC || "https://rpc.mainnet.arc.io",
-      chainId: 5042,
-      accounts: DEPLOYER_PRIVATE_KEY ? [DEPLOYER_PRIVATE_KEY] : [],
-    },
-  },
-};
-```
-
-`contracts/scripts/deploy.js`:
-
-```js
-const { ethers, network } = require("hardhat");
-const fs = require("fs");
-
-async function main() {
-  const usdc = process.env.USDC_ADDRESS;
-  const Settla = await ethers.getContractFactory("Settla");
-  const settla = await Settla.deploy(usdc);
-  await settla.waitForDeployment();
-  const address = await settla.getAddress();
-  console.log("Settla deployed to:", address);
-
-  fs.mkdirSync("deployments", { recursive: true });
-  fs.writeFileSync(
-    "deployments/arc-mainnet.json",
-    JSON.stringify({ network: network.name, address, usdc }, null, 2),
-  );
-}
-
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
-```
-
-`contracts/scripts/export-abi.js`:
-
-```js
-const fs = require("fs");
-const artifact = require("../artifacts/contracts/Settla.sol/Settla.json");
-fs.writeFileSync(
-  "../web/src/lib/settla.abi.json",
-  JSON.stringify(artifact.abi, null, 2),
-);
-console.log("ABI exported");
-```
+npm scripts: `test`, `compile`, `deploy:testnet`, `deploy:mainnet`, `export-abi`, `listen`.
 
 `contracts/.env.example`:
 
 ```
 DEPLOYER_PRIVATE_KEY=
 ARC_MAINNET_RPC=https://rpc.mainnet.arc.io
+ARC_TESTNET_RPC=https://rpc.testnet.arc.io
 USDC_ADDRESS=0x3600000000000000000000000000000000000000
 SETTLA_ADDRESS=
+MERCHANT_ADDRESS=
 ```
 
-## Tests to write (`test/Settla.test.js`, using `MockUSDC` with 6 decimals)
+## Tests (`test/Settla.test.js`, using `MockUSDC` with 6 decimals)
 
 - `createInvoice` stores merchant, amount, memo and emits `InvoiceCreated`
-- `createInvoice` reverts on zero amount
+- `createInvoice` reverts on zero amount and on memos over 280 bytes
 - `pay` moves exact USDC from payer to merchant and emits `Settled`
 - `pay` reverts if the invoice is already paid or cancelled
 - `pay` reverts without sufficient allowance
 - `cancel` works only for the merchant and only while open
+- the constructor rejects the zero address
 - `invoicesOf` returns every ID a merchant created, in order
 
-## Frontend: key files
+## Frontend
 
-`web/src/lib/arc.ts`:
+| File | Purpose |
+| ---- | ------- |
+| `lib/arc.ts` | viem chain definition for Arc (native USDC, 18 decimals) |
+| `lib/wagmi.ts` | wagmi config: Arc only, injected wallet connector, SSR enabled |
+| `lib/settla.ts` | Contract/USDC addresses from env, status enum, `formatUsdc`, error helper |
+| `lib/useArcTx.ts` | Switches the wallet to Arc if needed, sends a write, waits for the receipt |
+| `components/ConnectButton.tsx` | Connect, switch-to-Arc, and disconnect states |
+| `components/CreateInvoiceForm.tsx` | Validates amount (up to 6 decimals) and memo (280 bytes), creates, redirects to the pay page |
+| `components/PayButton.tsx` | Checks balance and allowance, approves only if needed, then pays |
+| `components/InvoiceCard.tsx` | One invoice row with status badge and merchant cancel |
+| `app/page.tsx` | Landing and create form |
+| `app/dashboard/page.tsx` | Connected merchant's invoices, newest first |
+| `app/pay/[id]/page.tsx` | Invoice details, pay button for customers, share link for the merchant |
 
-```ts
-import { defineChain } from "viem";
-
-export const arc = defineChain({
-  id: 5042,
-  name: "Arc",
-  // Native gas accounting is 18 decimals; the USDC ERC-20 interface is 6.
-  nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 },
-  rpcUrls: {
-    default: {
-      http: [process.env.NEXT_PUBLIC_ARC_RPC ?? "https://rpc.mainnet.arc.io"],
-    },
-  },
-  blockExplorers: {
-    default: { name: "Arc Explorer", url: "https://explorer.arc.io" },
-  },
-});
-```
-
-`web/src/lib/wagmi.ts`:
-
-```ts
-import { createConfig, http, injected } from "wagmi";
-import { arc } from "./arc";
-
-export const config = createConfig({
-  chains: [arc],
-  connectors: [injected()],
-  transports: { [arc.id]: http() },
-  ssr: true,
-});
-```
-
-`web/src/lib/settla.ts`:
-
-```ts
-import abi from "./settla.abi.json";
-
-export const settlaAbi = abi;
-export const SETTLA_ADDRESS = process.env
-  .NEXT_PUBLIC_SETTLA_ADDRESS as `0x${string}`;
-export const USDC_ADDRESS = process.env
-  .NEXT_PUBLIC_USDC_ADDRESS as `0x${string}`;
-export const USDC_DECIMALS = 6;
-```
-
-`web/src/app/providers.tsx`:
-
-```tsx
-"use client";
-import { WagmiProvider } from "wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
-import { config } from "@/lib/wagmi";
-
-export function Providers({ children }: { children: React.ReactNode }) {
-  const [client] = useState(() => new QueryClient());
-  return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={client}>{children}</QueryClientProvider>
-    </WagmiProvider>
-  );
-}
-```
-
-Wrap `{children}` in `layout.tsx` with `<Providers>`.
-
-`web/src/components/CreateInvoiceForm.tsx`:
-
-```tsx
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useConfig, useWriteContract } from "wagmi";
-import { waitForTransactionReceipt } from "wagmi/actions";
-import { parseEventLogs, parseUnits } from "viem";
-import { settlaAbi, SETTLA_ADDRESS, USDC_DECIMALS } from "@/lib/settla";
-
-export function CreateInvoiceForm() {
-  const router = useRouter();
-  const config = useConfig();
-  const { writeContractAsync } = useWriteContract();
-  const [amount, setAmount] = useState("");
-  const [memo, setMemo] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      const hash = await writeContractAsync({
-        address: SETTLA_ADDRESS,
-        abi: settlaAbi,
-        functionName: "createInvoice",
-        args: [parseUnits(amount, USDC_DECIMALS), memo],
-      });
-      const receipt = await waitForTransactionReceipt(config, { hash });
-      const [log] = parseEventLogs({
-        abi: settlaAbi,
-        logs: receipt.logs,
-        eventName: "InvoiceCreated",
-      });
-      router.push(`/pay/${(log.args as { id: bigint }).id}`);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <form onSubmit={onSubmit} className="space-y-3">
-      <input
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        placeholder="Amount (USDC)"
-        className="border p-2 w-full"
-      />
-      <input
-        value={memo}
-        onChange={(e) => setMemo(e.target.value)}
-        placeholder="What is this for?"
-        className="border p-2 w-full"
-      />
-      <button
-        disabled={busy || !amount}
-        className="bg-black text-white px-4 py-2 disabled:opacity-50"
-      >
-        {busy ? "Creating..." : "Create invoice"}
-      </button>
-    </form>
-  );
-}
-```
-
-`web/src/components/PayButton.tsx`:
-
-```tsx
-"use client";
-import { useState } from "react";
-import { useConfig, useWriteContract } from "wagmi";
-import { waitForTransactionReceipt } from "wagmi/actions";
-import { erc20Abi } from "viem";
-import { settlaAbi, SETTLA_ADDRESS, USDC_ADDRESS } from "@/lib/settla";
-
-export function PayButton({ id, amount }: { id: bigint; amount: bigint }) {
-  const config = useConfig();
-  const { writeContractAsync } = useWriteContract();
-  const [status, setStatus] = useState<
-    "idle" | "approving" | "paying" | "done" | "error"
-  >("idle");
-
-  async function onPay() {
-    try {
-      setStatus("approving");
-      const approveHash = await writeContractAsync({
-        address: USDC_ADDRESS,
-        abi: erc20Abi,
-        functionName: "approve",
-        args: [SETTLA_ADDRESS, amount],
-      });
-      await waitForTransactionReceipt(config, { hash: approveHash });
-
-      setStatus("paying");
-      const payHash = await writeContractAsync({
-        address: SETTLA_ADDRESS,
-        abi: settlaAbi,
-        functionName: "pay",
-        args: [id],
-      });
-      await waitForTransactionReceipt(config, { hash: payHash });
-      setStatus("done");
-    } catch {
-      setStatus("error");
-    }
-  }
-
-  return (
-    <button
-      onClick={onPay}
-      disabled={
-        status === "approving" || status === "paying" || status === "done"
-      }
-      className="bg-black text-white px-4 py-2 disabled:opacity-50"
-    >
-      {status === "idle" && "Pay with USDC"}
-      {status === "approving" && "Approve USDC..."}
-      {status === "paying" && "Settling..."}
-      {status === "done" && "Paid"}
-      {status === "error" && "Failed. Retry"}
-    </button>
-  );
-}
-```
-
-The `pay/[id]` page reads `getInvoice(id)` with `useReadContract`, shows amount, memo and
-status, and renders `PayButton` only while status is `Open` (1). The dashboard reads
-`invoicesOf(address)` and maps each ID to an `InvoiceCard`.
+`settla.abi.ts` is generated: run `npm run export-abi` in `contracts/` after any contract change.
 
 `web/.env.example`:
 
