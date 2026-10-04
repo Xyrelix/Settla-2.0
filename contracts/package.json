@@ -2,8 +2,16 @@
   "name": "settla-contracts",
   "private": true,
   "version": "1.0.0",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:testnet": "hardhat run scripts/deploy.js --network arcTestnet",
+    "deploy:mainnet": "hardhat run scripts/deploy.js --network arcMainnet",
+    "export-abi": "node scripts/export-abi.js",
+    "listen": "node scripts/listen.js"
+  },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^7.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
     "dotenv": "^18.0.5",
     "hardhat": "^2.29.1"
   }
