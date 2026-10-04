@@ -1,5 +1,30 @@
 {
   "name": "settla-web",
   "private": true,
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "wagmi": "2.16.3",
+    "viem": "2.33.1",
+    "@tanstack/react-query": "5.85.3"
+  },
+  "devDependencies": {
+    "typescript": "5.9.2",
+    "@types/node": "20.19.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.33.0",
+    "eslint-config-next": "16.3.8",
+    "tailwindcss": "4.1.11",
+    "@tailwindcss/postcss": "4.1.11",
+    "postcss": "8.4.49"
+  }
 }
