@@ -102,12 +102,13 @@ contract Settla {
 | File | Purpose |
 | ---- | ------- |
 | `hardhat.config.js` | Solidity 0.8.24 with optimizer; `arcMainnet` (5042) and `arcTestnet` (5042002) networks |
-| `scripts/deploy.js` | Deploys `Settla(USDC_ADDRESS)` and writes `deployments/<network>.json` (`arc-mainnet.json` on mainnet) |
+| `scripts/deploy.js` | Deploys `Settla(USDC_ADDRESS)`, writes `deployments/<network>.json` (`arc-mainnet.json` on mainnet), then verifies |
+| `scripts/verify.js` | Verifies on Arc's Blockscout explorer via `verify:blockscout`; if the API is unreachable, writes the Standard JSON input for manual verification |
 | `scripts/export-abi.js` | Writes the ABI to `web/src/lib/settla.abi.json` (Node) and `settla.abi.ts` (`as const`, typed for viem/wagmi) |
 | `scripts/listen.js` | Logs `Settled` events, optionally filtered to `MERCHANT_ADDRESS` |
 | `contracts/mocks/MockUSDC.sol` | 6-decimal ERC-20 used only by tests |
 
-npm scripts: `test`, `compile`, `deploy:testnet`, `deploy:mainnet`, `export-abi`, `listen`.
+npm scripts: `test`, `compile`, `deploy:testnet`, `deploy:mainnet`, `verify:testnet`, `verify:mainnet`, `export-abi`, `listen`.
 
 `contracts/.env.example`:
 
@@ -115,6 +116,7 @@ npm scripts: `test`, `compile`, `deploy:testnet`, `deploy:mainnet`, `export-abi`
 DEPLOYER_PRIVATE_KEY=
 ARC_MAINNET_RPC=https://rpc.mainnet.arc.io
 ARC_TESTNET_RPC=https://rpc.testnet.arc.io
+ARC_MAINNET_EXPLORER_API=https://explorer.arc.io/api
 USDC_ADDRESS=0x3600000000000000000000000000000000000000
 SETTLA_ADDRESS=
 MERCHANT_ADDRESS=
@@ -145,7 +147,7 @@ MERCHANT_ADDRESS=
 | `components/InvoiceCard.tsx` | One invoice row with status badge and merchant cancel |
 | `app/page.tsx` | Landing and create form |
 | `app/dashboard/page.tsx` | Connected merchant's invoices, newest first |
-| `app/pay/[id]/page.tsx` | Invoice details, pay button for customers, share link for the merchant |
+| `app/pay/[id]/page.tsx` | Invoice details, pay button for customers, share link and QR code for the merchant |
 
 `settla.abi.ts` is generated: run `npm run export-abi` in `contracts/` after any contract change.
 

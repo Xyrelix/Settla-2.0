@@ -1,25 +1,58 @@
 # Settla
 
-Non-custodial USDC invoicing for small businesses, built on Arc mainnet.
+**Non-custodial USDC invoicing for small businesses, live on Arc mainnet.**
 
-A merchant creates an invoice, a customer pays it in USDC with one transaction, and the
-contract settles straight to the merchant's wallet. No custody, no volatile gas token:
-Arc uses USDC for gas, so a small business only ever holds one asset.
+A merchant creates an invoice, shares a link or QR code, and the customer pays in USDC. The
+contract moves the money straight from customer to merchant in the same transaction: Settla
+never holds funds, and because Arc uses USDC for gas, a small business only ever needs one asset.
 
 > Built for the Arc Microgrants Mainnet Challenge.
 
+## Live on Arc mainnet
+
+| | |
+| --- | --- |
+| App | TODO: `https://<your-app>.vercel.app` |
+| Contract (verified) | TODO: [`0x…`](https://explorer.arc.io/address/0x…#code) |
+| Demo video | TODO: link (60–90 s: create, scan, pay, settled) |
+| Try it | TODO: an open demo invoice, `https://<your-app>.vercel.app/pay/<id>` |
+| Builder | TODO: GitHub / X profile |
+
+### Proof of use
+
+Real transactions on Arc mainnet:
+
+| Action | Invoice | Amount | Transaction |
+| --- | --- | --- | --- |
+| Create | #1 | TODO | [TODO](https://explorer.arc.io/tx/0x…) |
+| Pay | #1 | TODO | [TODO](https://explorer.arc.io/tx/0x…) |
+| Cancel | #2 | TODO | [TODO](https://explorer.arc.io/tx/0x…) |
+
+## What it uses Arc for
+
+- **USDC for gas and for settlement.** Merchant and customer hold only USDC. There is no second
+  token to buy, and no volatile asset on the balance sheet.
+- **Sub-second deterministic finality.** An invoice is paid the moment its block commits; the
+  pay page flips to Paid while the customer is still looking at it. No "wait for confirmations".
+- **USDC's ERC-20 interface** at `0x3600…0000` (6 decimals), so payment is a plain
+  `transferFrom` from customer to merchant.
+
 ## How it works
 
-1. Merchant calls `createInvoice(amount, memo)` and gets an invoice ID and a pay link.
-2. Customer opens `/pay/<id>`, approves USDC, and calls `pay(id)`.
+1. The merchant calls `createInvoice(amount, memo)` and gets a pay link and QR code.
+2. The customer opens `/pay/<id>`, approves USDC (only if needed), and calls `pay(id)`.
 3. The contract transfers USDC directly from customer to merchant and emits `Settled`.
-4. The dashboard shows each invoice as Open, Paid, or Cancelled.
+4. The dashboard shows each invoice as Open, Paid, or Cancelled; the merchant can cancel open ones.
 
-## Why Arc
+## Security and limitations
 
-- USDC is the native gas token, so there is no second asset to acquire.
-- Sub-second deterministic finality: an invoice is settled the moment the block commits.
-- EVM-compatible, so standard Solidity, ethers, and viem tooling works.
+- **Non-custodial.** The contract never holds USDC, and has no owner, admin key, or upgrade path.
+- **Unaudited.** This is a proof of concept. Keep amounts small.
+- **Memos are public and permanent.** Everything on-chain is visible: never put customer names,
+  emails, or addresses in a memo.
+- **Two signatures for first-time payers** (approve, then pay). Later payments skip the approval
+  if the allowance already covers them.
+- **Browser-extension wallets only** (MetaMask and similar) for now.
 
 ## Project structure
 
@@ -37,7 +70,8 @@ settla/
 │   │   ├── Settla.sol
 │   │   └── mocks/MockUSDC.sol     # tests only
 │   ├── scripts/
-│   │   ├── deploy.js
+│   │   ├── deploy.js              # deploys, records, then verifies on the explorer
+│   │   ├── verify.js              # explorer verification (with manual fallback)
 │   │   ├── export-abi.js          # writes settla.abi.json + settla.abi.ts
 │   │   └── listen.js              # merchant-side event listener
 │   ├── test/Settla.test.js
@@ -152,7 +186,8 @@ Fill in `DEPLOYER_PRIVATE_KEY` in `contracts/.env`. After deploying, put the con
 cd contracts
 npm test                    # compile + run the test suite
 npm run deploy:testnet      # optional dry run on Arc testnet (chain 5042002)
-npm run deploy:mainnet
+npm run deploy:mainnet      # also verifies the source on the explorer
+npm run verify:mainnet      # re-run verification on its own if needed
 npm run export-abi          # writes web/src/lib/settla.abi.{json,ts}
 
 # web
@@ -162,12 +197,20 @@ npm run dev                 # http://localhost:3000
 
 (PowerShell: identical commands, run them on separate lines.)
 
-## Deployment
+### Contract verification
 
-- Network: Arc mainnet, chain ID `5042`
-- Contract: `<SETTLA_ADDRESS>` (fill in after deploy)
-- Explorer: `https://explorer.arc.io/address/<SETTLA_ADDRESS>`
-- Live app: `<VERCEL_URL>`
+`deploy.js` verifies the source on Arc's Blockscout explorer automatically, retrying while the
+explorer indexes the new contract. This works on testnet. The mainnet explorer's API sits behind
+a bot check that can block scripted requests; when that happens the script writes
+`deployments/arcMainnet-standard-input.json` and prints the compiler version, contract name, and
+constructor arguments to paste into the explorer's **Verify & Publish** page (method: Solidity,
+Standard JSON input).
+
+### Deploying the web app (Vercel)
+
+1. Import the repo in Vercel and set the **Root Directory** to `web`.
+2. Add the environment variables from `web/.env.example`, including `NEXT_PUBLIC_SETTLA_ADDRESS`.
+3. Deploy. `NEXT_PUBLIC_*` values are baked in at build time, so redeploy after changing them.
 
 ## Docs
 
