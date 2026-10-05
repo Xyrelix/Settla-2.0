@@ -81,16 +81,22 @@ settla/
     ├── .env.example
     └── src/
         ├── app/
-        │   ├── layout.tsx
+        │   ├── layout.tsx         # floating nav, footer, fonts, metadata
         │   ├── providers.tsx
-        │   ├── page.tsx           # landing + create invoice
+        │   ├── globals.css        # palette tokens, surfaces, motion
+        │   ├── page.tsx           # landing page
+        │   ├── new/page.tsx       # create an invoice
         │   ├── dashboard/page.tsx # merchant's invoices
-        │   └── pay/[id]/page.tsx  # customer pay page
+        │   ├── pay/[id]/page.tsx  # customer pay page (receipt + QR)
+        │   ├── not-found.tsx
+        │   └── icon.svg
         ├── components/
         │   ├── ConnectButton.tsx
         │   ├── CreateInvoiceForm.tsx
-        │   ├── PayButton.tsx
-        │   └── InvoiceCard.tsx
+        │   ├── CtaLink.tsx
+        │   ├── InvoiceCard.tsx
+        │   ├── NavLinks.tsx
+        │   └── PayButton.tsx
         └── lib/
             ├── arc.ts             # Arc chain definition
             ├── wagmi.ts
