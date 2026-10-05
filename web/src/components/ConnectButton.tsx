@@ -25,7 +25,13 @@ export function ConnectButton() {
           disabled={!connector || isPending}
           className="btn-primary px-4 py-2 text-sm"
         >
-          {isPending ? "Connecting…" : "Connect wallet"}
+          {isPending ? (
+            "Connecting…"
+          ) : (
+            <span>
+              Connect<span className="hidden min-[400px]:inline">&nbsp;wallet</span>
+            </span>
+          )}
         </button>
         {error && <span role="alert" className="mt-1 max-w-56 text-right text-xs text-danger">{error.message.split("\n")[0]}</span>}
       </div>

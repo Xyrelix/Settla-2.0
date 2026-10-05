@@ -1,9 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
 import { Figtree, Fraunces } from "next/font/google";
 import { Providers } from "./providers";
-import { ConnectButton } from "@/components/ConnectButton";
-import { NavLinks } from "@/components/NavLinks";
 import "./globals.css";
 
 const body = Figtree({ subsets: ["latin"], variable: "--font-body" });
@@ -37,30 +34,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <Providers>
-          <header className="sticky top-3 z-20 px-3 sm:top-5 sm:px-5">
-            <nav className="island mx-auto flex max-w-5xl flex-wrap items-center gap-x-5 gap-y-1.5 rounded-[1.75rem] py-2 pl-4 pr-2">
-              <Link href="/" translate="no" className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
-                <span aria-hidden className="grid size-7 place-items-center rounded-lg bg-accent text-sm text-accent-ink">
-                  S
-                </span>
-                Settla
-              </Link>
-              <div className="order-last -ml-3 w-full pb-0.5 sm:order-none sm:ml-0 sm:w-auto sm:pb-0">
-                <NavLinks />
-              </div>
-              <div className="ml-auto">
-                <ConnectButton />
-              </div>
-            </nav>
-          </header>
-          <main id="main" className="mx-auto w-full max-w-5xl flex-1 scroll-mt-28 px-5 pb-24 pt-12 sm:pt-20">
-            {children}
-          </main>
+          {children}
           <footer className="border-t border-line/70">
-            <div className="mx-auto flex max-w-5xl flex-wrap gap-x-6 gap-y-2 px-5 py-6 text-sm text-muted">
+            <div className="mx-auto flex max-w-5xl flex-col items-center gap-2 px-5 py-6 text-center text-sm text-muted md:flex-row md:justify-between md:gap-6">
               <span>Non-custodial. Payments go straight to the merchant.</span>
               <span>Unaudited proof of concept on Arc.</span>
-              <a href="https://github.com/Xyrelix/Settla" className="ml-auto underline-offset-4 hover:text-ink hover:underline">
+              <a href="https://github.com/Xyrelix/Settla" className="underline-offset-4 hover:text-ink hover:underline">
                 Source on GitHub
               </a>
             </div>

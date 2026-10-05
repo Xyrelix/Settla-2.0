@@ -31,7 +31,7 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="max-w-3xl space-y-8">
+    <div className="mx-auto max-w-3xl space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-1">
           <h1 className="font-display text-4xl font-semibold tracking-tight">Your invoices</h1>
