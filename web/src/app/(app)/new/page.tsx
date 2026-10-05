@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowLeft } from "@/components/Icons";
 import { CreateInvoiceForm } from "@/components/CreateInvoiceForm";
 import { SETTLA_ADDRESS } from "@/lib/settla";
 
@@ -16,9 +17,9 @@ export default function NewInvoice() {
     <div className="space-y-6">
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted transition duration-300 ease-spring hover:text-ink"
+        className="-ml-2 inline-flex min-h-10 items-center gap-1.5 rounded-full px-2 text-sm font-medium text-muted transition duration-300 ease-spring hover:text-ink"
       >
-        <span aria-hidden>←</span> Back to dashboard
+        <ArrowLeft className="size-4" stroke={1.75} /> Back to dashboard
       </Link>
       <div className="grid items-start gap-10 lg:grid-cols-[28rem_1fr] lg:gap-16">
         <section aria-labelledby="new-invoice" className="card rise p-6 sm:p-8">

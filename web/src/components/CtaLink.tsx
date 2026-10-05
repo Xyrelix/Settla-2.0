@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowUpRight } from "./Icons";
 
 /** Primary pill link with its arrow nested in its own circle; the arrow nudges on hover. */
 export function CtaLink({ href, children, large }: { href: string; children: React.ReactNode; large?: boolean }) {
@@ -11,9 +12,7 @@ export function CtaLink({ href, children, large }: { href: string; children: Rea
           large ? "size-10" : "size-8"
         }`}
       >
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-4">
-          <path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <ArrowUpRight className="size-4" stroke={2} />
       </span>
     </Link>
   );

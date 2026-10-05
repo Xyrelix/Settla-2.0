@@ -8,6 +8,7 @@ import { arc } from "@/lib/arc";
 import { formatUsdc, settlaAbi, SETTLA_ADDRESS, Status } from "@/lib/settla";
 import { PayButton } from "@/components/PayButton";
 import { StatusBadge } from "@/components/InvoiceCard";
+import { Check, Copy } from "@/components/Icons";
 
 const noop = () => () => {};
 const short = (a: string) => `${a.slice(0, 8)}…${a.slice(-6)}`;
@@ -168,7 +169,11 @@ export default function PayPage() {
               onFocus={(e) => e.currentTarget.select()}
               className="field min-w-0 flex-1 py-2 font-mono text-xs"
             />
-            <button onClick={copy} aria-live="polite" className="btn-quiet px-3 py-2 text-sm">
+            <button onClick={copy} aria-live="polite" className="btn-quiet min-h-10 px-3.5 text-sm">
+              <span aria-hidden className="relative size-4">
+                <Copy className={`swap-icon absolute inset-0 size-4 ${copied ? "swap-out" : ""}`} />
+                <Check className={`swap-icon absolute inset-0 size-4 text-paid ${copied ? "" : "swap-out"}`} />
+              </span>
               {copied ? "Copied" : "Copy"}
             </button>
           </div>

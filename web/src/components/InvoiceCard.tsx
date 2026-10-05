@@ -74,11 +74,11 @@ export function InvoiceCard({ id }: { id: bigint }) {
           <p className="amount text-xl font-semibold">
             {formatUsdc(inv.amount)} <span className="font-sans text-xs font-semibold text-muted">USDC</span>
           </p>
-          <div className="mt-2 flex items-center justify-end gap-3 text-sm">
+          <div className="-mr-2.5 mt-1 flex items-center justify-end gap-0.5 text-sm">
             {confirming ? (
               <>
-                <span className="text-muted">Cancel it?</span>
-                <button onClick={onCancel} disabled={cancelling} className="font-semibold text-danger disabled:opacity-50">
+                <span className="px-1 text-muted">Cancel it?</span>
+                <button onClick={onCancel} disabled={cancelling} className="min-h-10 rounded-full px-2.5 font-semibold text-danger disabled:opacity-50">
                   {cancelling ? "Cancelling…" : "Yes, cancel"}
                 </button>
                 {/* The Cancel button that had focus is gone; land keyboard users on the safe choice. */}
@@ -86,18 +86,18 @@ export function InvoiceCard({ id }: { id: bigint }) {
                   onClick={() => setConfirming(false)}
                   disabled={cancelling}
                   autoFocus
-                  className="text-muted hover:text-ink"
+                  className="min-h-10 rounded-full px-2.5 text-muted hover:text-ink"
                 >
                   Keep
                 </button>
               </>
             ) : (
               <>
-                <Link href={`/pay/${id}`} className="font-medium text-accent underline-offset-4 hover:underline">
+                <Link href={`/pay/${id}`} className="inline-flex min-h-10 items-center rounded-full px-2.5 font-medium text-accent underline-offset-4 hover:underline">
                   View
                 </Link>
                 {inv.status === Status.Open && (
-                  <button onClick={() => setConfirming(true)} className="text-muted transition hover:text-danger">
+                  <button onClick={() => setConfirming(true)} className="min-h-10 rounded-full px-2.5 text-muted transition hover:text-danger">
                     Cancel
                   </button>
                 )}

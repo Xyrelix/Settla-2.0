@@ -28,7 +28,7 @@ export function NavLinks() {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`rounded-full px-3.5 py-1.5 font-medium transition duration-300 ease-spring ${
+            className={`inline-flex min-h-10 items-center rounded-full px-3.5 font-medium transition duration-300 ease-spring ${
               active ? "bg-accent-soft text-accent" : "text-muted hover:text-ink"
             }`}
           >
