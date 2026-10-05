@@ -81,16 +81,22 @@ settla/
     ├── .env.example
     └── src/
         ├── app/
-        │   ├── layout.tsx         # floating nav, footer, fonts, metadata
+        │   ├── layout.tsx         # fonts, metadata, footer
         │   ├── providers.tsx
         │   ├── globals.css        # palette tokens, surfaces, motion
-        │   ├── page.tsx           # landing page
-        │   ├── new/page.tsx       # create an invoice
-        │   ├── dashboard/page.tsx # merchant's invoices
-        │   ├── pay/[id]/page.tsx  # customer pay page (receipt + QR)
+        │   ├── (marketing)/       # landing: own header, connect → dashboard
+        │   │   ├── layout.tsx
+        │   │   └── page.tsx
+        │   ├── (app)/             # app header with centred Dashboard link
+        │   │   ├── layout.tsx
+        │   │   ├── dashboard/page.tsx  # merchant's invoices
+        │   │   ├── new/page.tsx        # create an invoice
+        │   │   └── pay/[id]/page.tsx   # customer pay page (receipt + QR)
         │   ├── not-found.tsx
         │   └── icon.svg
         ├── components/
+        │   ├── SiteHeader.tsx     # floating nav island
+        │   ├── LandingWallet.tsx  # landing connect button
         │   ├── ConnectButton.tsx
         │   ├── CreateInvoiceForm.tsx
         │   ├── CtaLink.tsx
