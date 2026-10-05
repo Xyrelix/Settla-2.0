@@ -11,7 +11,7 @@ const STEPS = [
 
 const REASONS = [
   ["It goes straight to you", "Payments move from your customer's wallet to yours. Settla never touches the money, so there's nothing to withdraw and no one to wait on."],
-  ["Paid in about a second", "Arc confirms a payment the moment it happens. No “pending” for days, no chasing a transfer that hasn't arrived."],
+  ["Paid in about a second", "Arc confirms a payment the moment it happens, so nothing sits in “pending” for days and there is no transfer to chase."],
   ["One currency for everything", "Even the network fee is paid in USDC, a dollar stablecoin. You never need to buy a second coin just to get paid."],
   ["No sign-up, no monthly fee", "Connect a wallet and send your first invoice. Each invoice costs a fraction of a cent in network fees."],
 ];
@@ -19,8 +19,8 @@ const REASONS = [
 const GOOD_TO_KNOW = [
   ["Notes are public.", "Invoices live on a public blockchain, so keep names and phone numbers out of the note."],
   ["Two taps the first time.", "A new customer approves USDC once, then pays. After that it's one tap."],
-  ["You hold the keys.", "Settla can't freeze, reverse, or take a payment. That also means a lost wallet can't be recovered by us."],
-  ["Early days.", "Settla is a proof of concept and hasn't been audited. Start with small amounts."],
+  ["You hold the keys.", "Settla can't freeze, reverse, or take a payment. It also means we can't recover a lost wallet for you."],
+  ["It's unaudited.", "Settla is a proof of concept and hasn't had a security audit. Start with small amounts."],
 ];
 
 function ReceiptPreview() {
@@ -67,7 +67,7 @@ export default function Landing() {
           </h1>
           <p className="rise max-w-[34rem] text-lg leading-relaxed text-muted [animation-delay:160ms]">
             Settla turns an amount and a note into a link your customer can pay in USDC. The money goes straight
-            to your wallet. No bank delays, no card fees, no middleman holding your cash.
+            to your wallet, with no card fees and nobody holding it in between.
           </p>
           <div className="rise flex flex-wrap items-center gap-x-6 gap-y-4 [animation-delay:240ms]">
             <CtaLink href="/new" large>
@@ -85,7 +85,7 @@ export default function Landing() {
         <div className="reveal space-y-3">
           <p className="eyebrow">How it works</p>
           <h2 id="how" className="font-display text-4xl font-semibold tracking-tight">
-            Three steps. No paperwork.
+            From invoice to payment in three steps
           </h2>
           <p className="text-muted">If you can send a text message, you can send an invoice.</p>
         </div>
@@ -108,7 +108,7 @@ export default function Landing() {
         <div className="reveal space-y-3">
           <p className="eyebrow">Why Settla</p>
           <h2 id="why" className="max-w-xl font-display text-4xl font-semibold tracking-tight">
-            Why shop owners like it
+            What you get
           </h2>
         </div>
         <div className="grid gap-x-16 gap-y-10 sm:grid-cols-2">

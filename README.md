@@ -30,11 +30,12 @@ Real transactions on Arc mainnet:
 
 ## What it uses Arc for
 
-- **USDC for gas and for settlement.** Merchant and customer hold only USDC. There is no second
-  token to buy, and no volatile asset on the balance sheet.
-- **Sub-second deterministic finality.** An invoice is paid the moment its block commits; the
-  pay page flips to Paid while the customer is still looking at it. No "wait for confirmations".
-- **USDC's ERC-20 interface** at `0x3600…0000` (6 decimals), so payment is a plain
+- USDC pays for gas as well as the invoice, so merchant and customer only ever hold USDC. There is
+  no second token to buy and no volatile asset on the balance sheet.
+- Finality is deterministic and under a second. An invoice is paid when its block commits, so the
+  pay page switches to Paid while the customer is still looking at it, without a wait for
+  confirmations.
+- Payment uses USDC's ERC-20 interface at `0x3600…0000` (6 decimals), so it is a plain
   `transferFrom` from customer to merchant.
 
 ## How it works
@@ -46,13 +47,13 @@ Real transactions on Arc mainnet:
 
 ## Security and limitations
 
-- **Non-custodial.** The contract never holds USDC, and has no owner, admin key, or upgrade path.
-- **Unaudited.** This is a proof of concept. Keep amounts small.
-- **Memos are public and permanent.** Everything on-chain is visible: never put customer names,
-  emails, or addresses in a memo.
-- **Two signatures for first-time payers** (approve, then pay). Later payments skip the approval
-  if the allowance already covers them.
-- **Browser-extension wallets only** (MetaMask and similar) for now.
+- The contract never holds USDC and has no owner, admin key, or upgrade path.
+- It has not been audited. This is a proof of concept, so keep amounts small.
+- Memos are public and permanent, like everything on-chain. Never put customer names, emails, or
+  addresses in a memo.
+- A first-time payer signs twice (approve, then pay). Later payments skip the approval when the
+  existing allowance covers them.
+- Only browser-extension wallets (MetaMask and similar) work for now.
 
 ## Project structure
 
