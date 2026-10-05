@@ -12,10 +12,10 @@ never holds funds, and because Arc uses USDC for gas, a small business only ever
 
 | | |
 | --- | --- |
-| App | TODO: `https://<your-app>.vercel.app` |
+| App | [settla-seven.vercel.app](https://settla-seven.vercel.app) (testnet until the mainnet deploy) |
 | Contract (verified) | TODO: [`0x…`](https://explorer.arc.io/address/0x…#code) |
 | Demo video | TODO: link (60–90 s: create, scan, pay, settled) |
-| Try it | TODO: an open demo invoice, `https://<your-app>.vercel.app/pay/<id>` |
+| Try it | TODO: an open demo invoice, `https://settla-seven.vercel.app/pay/<id>` |
 | Builder | TODO: GitHub / X profile |
 
 ### Proof of use
