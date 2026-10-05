@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { StatusBadge } from "@/components/InvoiceCard";
+import { CtaLink } from "@/components/CtaLink";
 import { Status } from "@/lib/settla";
 
 const STEPS = [
@@ -24,10 +25,10 @@ const GOOD_TO_KNOW = [
 
 function ReceiptPreview() {
   return (
-    <div aria-hidden className="relative mx-auto w-full max-w-sm select-none py-6">
+    <div aria-hidden className="rise relative mx-auto w-full max-w-sm select-none py-6 [animation-delay:350ms]">
       {/* A second receipt peeking out behind, for depth. */}
-      <div className="card absolute inset-x-6 top-0 h-full -rotate-3 opacity-70" />
-      <div className="card relative rotate-1 overflow-hidden">
+      <div className="card absolute inset-x-6 top-0 h-full translate-y-3 opacity-70 md:translate-y-0 md:-rotate-3" />
+      <div className="card relative overflow-hidden md:rotate-1">
         <div className="space-y-5 p-7">
           <div className="flex items-center justify-between">
             <span className="amount text-sm text-muted">Invoice #1042</span>
@@ -60,18 +61,18 @@ export default function Landing() {
     <div className="space-y-24 sm:space-y-32">
       <section className="grid items-center gap-12 lg:grid-cols-[1fr_24rem] lg:gap-16">
         <div className="space-y-7">
-          <p className="text-sm font-medium text-accent">For bakeries, tailors, freelancers and every small shop</p>
-          <h1 className="max-w-2xl font-display text-5xl font-semibold leading-[1.04] tracking-tight sm:text-7xl">
+          <p className="eyebrow rise">For small shops &amp; freelancers</p>
+          <h1 className="rise max-w-2xl font-display [animation-delay:80ms] text-5xl font-semibold leading-[1.04] tracking-tight sm:text-7xl">
             Get paid in dollars, the moment your customer pays.
           </h1>
-          <p className="max-w-[34rem] text-lg leading-relaxed text-muted">
+          <p className="rise max-w-[34rem] text-lg leading-relaxed text-muted [animation-delay:160ms]">
             Settla turns an amount and a note into a link your customer can pay in USDC. The money goes straight
             to your wallet. No bank delays, no card fees, no middleman holding your cash.
           </p>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-            <Link href="/new" className="btn-primary px-6 py-3.5 text-lg">
+          <div className="rise flex flex-wrap items-center gap-x-6 gap-y-4 [animation-delay:240ms]">
+            <CtaLink href="/new" large>
               Create an invoice
-            </Link>
+            </CtaLink>
             <Link href="/pay/1" className="font-medium text-ink underline decoration-line decoration-2 underline-offset-[6px] transition hover:decoration-accent">
               See a paid invoice
             </Link>
@@ -81,7 +82,8 @@ export default function Landing() {
       </section>
 
       <section aria-labelledby="how" className="grid gap-10 lg:grid-cols-[20rem_1fr] lg:gap-16">
-        <div className="space-y-3">
+        <div className="reveal space-y-3">
+          <p className="eyebrow">How it works</p>
           <h2 id="how" className="font-display text-4xl font-semibold tracking-tight">
             Three steps. No paperwork.
           </h2>
@@ -89,7 +91,7 @@ export default function Landing() {
         </div>
         <ol className="space-y-8">
           {STEPS.map(([title, body], i) => (
-            <li key={title} className="flex gap-5">
+            <li key={title} className="reveal flex gap-5">
               <span className="amount grid size-12 shrink-0 place-items-center rounded-2xl bg-accent-soft text-xl font-semibold text-accent">
                 {i + 1}
               </span>
@@ -103,12 +105,15 @@ export default function Landing() {
       </section>
 
       <section aria-labelledby="why" className="space-y-10">
-        <h2 id="why" className="max-w-xl font-display text-4xl font-semibold tracking-tight">
-          Why shop owners like it
-        </h2>
+        <div className="reveal space-y-3">
+          <p className="eyebrow">Why Settla</p>
+          <h2 id="why" className="max-w-xl font-display text-4xl font-semibold tracking-tight">
+            Why shop owners like it
+          </h2>
+        </div>
         <div className="grid gap-x-16 gap-y-10 sm:grid-cols-2">
           {REASONS.map(([title, body]) => (
-            <div key={title} className="space-y-2 border-t-2 border-accent/30 pt-5">
+            <div key={title} className="reveal space-y-2 border-t-2 border-accent/30 pt-5">
               <h3 className="font-display text-2xl font-semibold tracking-tight">{title}</h3>
               <p className="max-w-md leading-relaxed text-muted">{body}</p>
             </div>
@@ -116,7 +121,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section aria-labelledby="know" className="card grid gap-8 p-8 sm:p-10 lg:grid-cols-[16rem_1fr] lg:gap-12">
+      <section aria-labelledby="know" className="card reveal grid gap-8 p-8 sm:p-10 lg:grid-cols-[16rem_1fr] lg:gap-12">
         <h2 id="know" className="font-display text-3xl font-semibold tracking-tight">
           Good to know
         </h2>
@@ -130,14 +135,16 @@ export default function Landing() {
         </dl>
       </section>
 
-      <section className="flex flex-col items-start gap-6 rounded-3xl bg-accent-soft px-8 py-12 sm:flex-row sm:items-center sm:justify-between sm:px-12">
+      <section className="reveal flex flex-col items-start gap-6 rounded-[2rem] bg-accent-soft px-8 py-12 sm:flex-row sm:items-center sm:justify-between sm:px-12">
         <div className="space-y-2">
           <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">Send your first invoice today.</h2>
           <p className="text-muted">It takes about a minute. All you need is a wallet with a little USDC.</p>
         </div>
-        <Link href="/new" className="btn-primary shrink-0 px-6 py-3.5 text-lg">
-          Create an invoice
-        </Link>
+        <div className="shrink-0">
+          <CtaLink href="/new" large>
+            Create an invoice
+          </CtaLink>
+        </div>
       </section>
     </div>
   );

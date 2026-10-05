@@ -15,6 +15,10 @@
   --paid-soft: #e4eed9;
   --danger: #a3361f;
   --shadow: 42 33 24;
+  --tray: rgb(42 33 24 / 0.018);
+  --hairline: rgb(42 33 24 / 0.06);
+  --hairline-soft: rgb(42 33 24 / 0.035);
+  --highlight: rgb(255 255 255 / 0.8);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -32,6 +36,10 @@
     --paid-soft: #25321f;
     --danger: #f08a6f;
     --shadow: 0 0 0;
+    --tray: rgb(255 250 240 / 0.025);
+    --hairline: rgb(255 250 240 / 0.08);
+    --hairline-soft: rgb(255 250 240 / 0.05);
+    --highlight: rgb(255 250 240 / 0.05);
   }
 }
 
@@ -50,6 +58,8 @@
   --color-danger: var(--danger);
   --font-sans: var(--font-body);
   --font-display: var(--font-serif);
+  /* One curve for everything: quick start, long soft settle. */
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 html {
@@ -80,7 +90,15 @@ label {
 
 body {
   @apply bg-paper font-sans text-ink antialiased;
-  /* Faint paper grain so the background isn't flat. */
+}
+
+/* Paper grain on a fixed layer, so it never repaints while scrolling. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
 }
 
@@ -100,30 +118,81 @@ p {
   border-radius: 6px;
 }
 
+/*
+ * Double bezel: the card is a plate sitting in a thin tray. Spread shadows draw the
+ * tray, so it follows the radius exactly and takes no layout space.
+ */
 @utility card {
-  @apply rounded-2xl bg-card;
+  @apply rounded-[1.75rem] bg-card;
   box-shadow:
-    0 1px 0 rgb(var(--shadow) / 0.04),
-    0 12px 32px -16px rgb(var(--shadow) / 0.18);
+    inset 0 1px 0 var(--highlight),
+    0 0 0 1px var(--hairline),
+    0 0 0 5px var(--tray),
+    0 0 0 6px var(--hairline-soft),
+    0 24px 48px -24px rgb(var(--shadow) / 0.2);
+}
+
+/* Floating nav island. */
+@utility island {
+  @apply bg-card/80 backdrop-blur-xl;
+  box-shadow:
+    inset 0 1px 0 var(--highlight),
+    0 0 0 1px var(--hairline),
+    0 12px 32px -16px rgb(var(--shadow) / 0.25);
 }
 
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-semibold transition duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 font-semibold transition duration-300 ease-spring active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
 }
 
 @utility btn-primary {
   @apply btn bg-accent text-accent-ink hover:bg-accent-hover;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    0 8px 20px -10px var(--accent);
 }
 
 @utility btn-quiet {
-  @apply btn border border-line text-ink hover:border-muted hover:bg-card;
+  @apply btn text-ink hover:bg-card;
+  box-shadow: 0 0 0 1px var(--hairline);
 }
 
 @utility field {
-  @apply w-full rounded-xl border border-line bg-paper px-3.5 py-2.5 text-ink transition duration-200 placeholder:text-muted/70 hover:border-muted focus-visible:border-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/20;
+  @apply w-full rounded-2xl border border-line bg-paper px-4 py-3 text-ink transition duration-300 ease-spring placeholder:text-muted/70 hover:border-muted focus-visible:border-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/20;
+  box-shadow: inset 0 1px 2px rgb(var(--shadow) / 0.06);
 }
 
 @utility amount {
   @apply font-display tracking-tight;
   font-variant-numeric: tabular-nums lining-nums;
+}
+
+@utility eyebrow {
+  @apply inline-flex w-fit items-center rounded-full bg-accent-soft px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-accent-hover;
+}
+
+/* Load-in: hero pieces rise in sequence. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+@utility rise {
+  animation: rise 900ms var(--ease-spring) both;
+}
+
+/*
+ * Scroll-in: tied to the element's own view timeline, so no JavaScript. Browsers without
+ * scroll timelines skip it and show the content as-is.
+ */
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: rise var(--ease-spring) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
 }

@@ -23,7 +23,7 @@ export function ConnectButton() {
         <button
           onClick={() => connector && connect({ connector, chainId: arc.id })}
           disabled={!connector || isPending}
-          className="btn-primary px-3.5 py-2 text-sm"
+          className="btn-primary px-4 py-2 text-sm"
         >
           {isPending ? "Connecting…" : "Connect wallet"}
         </button>
@@ -37,7 +37,7 @@ export function ConnectButton() {
       <button
         onClick={() => switchChain({ chainId: arc.id })}
         disabled={switching}
-        className="btn bg-accent-soft px-3.5 py-2 text-sm text-accent hover:bg-accent hover:text-accent-ink"
+        className="btn bg-accent-soft px-4 py-2 text-sm text-accent hover:bg-accent hover:text-accent-ink"
       >
         {switching ? "Switching…" : `Switch to ${arc.name}`}
       </button>
@@ -49,7 +49,7 @@ export function ConnectButton() {
       onClick={() => disconnect()}
       title="Disconnect"
       aria-label={`Connected as ${address}. Disconnect`}
-      className="btn-quiet px-3.5 py-2 font-mono text-sm font-medium"
+      className="btn-quiet px-4 py-2 font-mono text-sm font-medium"
     >
       <span aria-hidden className="size-2 rounded-full bg-paid" />
       {address!.slice(0, 6)}…{address!.slice(-4)}

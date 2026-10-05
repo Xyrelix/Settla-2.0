@@ -13,7 +13,7 @@ const NEXT = [
 export default function NewInvoice() {
   return (
     <div className="grid items-start gap-10 lg:grid-cols-[28rem_1fr] lg:gap-16">
-      <section aria-labelledby="new-invoice" className="card p-6 sm:p-8">
+      <section aria-labelledby="new-invoice" className="card rise p-6 sm:p-8">
         <h1 id="new-invoice" className="mb-6 font-display text-3xl font-semibold tracking-tight">
           New invoice
         </h1>
@@ -27,7 +27,7 @@ export default function NewInvoice() {
         )}
       </section>
 
-      <aside className="space-y-5 lg:pt-8">
+      <aside className="rise space-y-5 [animation-delay:150ms] lg:pt-8">
         <h2 className="font-display text-xl font-semibold tracking-tight">What happens next</h2>
         <ol className="max-w-sm space-y-4">
           {NEXT.map((step, i) => (

@@ -73,7 +73,7 @@ export default function PayPage() {
   return (
     <div className={`mx-auto grid items-start gap-8 ${sharing ? "max-w-4xl lg:grid-cols-[1fr_20rem]" : "max-w-md"}`}>
       <div className="space-y-4">
-        <article className="card overflow-hidden">
+        <article className="card rise overflow-hidden">
           <div className="space-y-6 p-6 sm:p-8">
             <div className="flex items-center justify-between">
               <span className="amount text-sm text-muted">Invoice #{id.toString()}</span>
@@ -148,7 +148,7 @@ export default function PayPage() {
       </div>
 
       {sharing && (
-        <aside className="card space-y-4 p-6">
+        <aside className="card rise space-y-4 p-6 [animation-delay:150ms]">
           <div className="space-y-1">
             <h2 className="font-display text-xl font-semibold tracking-tight">Share with your customer</h2>
             <p className="text-sm text-muted">They can scan this at the counter, or open the link.</p>

@@ -37,15 +37,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <Providers>
-          <header className="border-b border-line/70">
-            <nav className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-3 px-5 py-4">
+          <header className="sticky top-3 z-20 px-3 sm:top-5 sm:px-5">
+            <nav className="island mx-auto flex max-w-5xl flex-wrap items-center gap-x-5 gap-y-1.5 rounded-[1.75rem] py-2 pl-4 pr-2">
               <Link href="/" translate="no" className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
                 <span aria-hidden className="grid size-7 place-items-center rounded-lg bg-accent text-sm text-accent-ink">
                   S
                 </span>
                 Settla
               </Link>
-              <div className="order-last -mx-3 w-full sm:order-none sm:mx-0 sm:w-auto">
+              <div className="order-last -ml-3 w-full pb-0.5 sm:order-none sm:ml-0 sm:w-auto sm:pb-0">
                 <NavLinks />
               </div>
               <div className="ml-auto">
@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
             </nav>
           </header>
-          <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-5 pb-20 pt-10 sm:pt-14">
+          <main id="main" className="mx-auto w-full max-w-5xl flex-1 scroll-mt-28 px-5 pb-24 pt-12 sm:pt-20">
             {children}
           </main>
           <footer className="border-t border-line/70">

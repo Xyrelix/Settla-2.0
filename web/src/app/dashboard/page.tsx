@@ -1,19 +1,19 @@
 "use client";
-import Link from "next/link";
 import { useAccount, useReadContract } from "wagmi";
 import { arc } from "@/lib/arc";
 import { settlaAbi, SETTLA_ADDRESS } from "@/lib/settla";
 import { InvoiceCard } from "@/components/InvoiceCard";
+import { CtaLink } from "@/components/CtaLink";
 
 function EmptyState({ title, body, cta }: { title: string; body: string; cta?: boolean }) {
   return (
-    <div className="card flex flex-col items-start gap-3 p-8">
+    <div className="card rise flex flex-col items-start gap-3 p-8 sm:p-10">
       <h2 className="font-display text-2xl font-semibold tracking-tight">{title}</h2>
       <p className="max-w-md text-muted">{body}</p>
       {cta && (
-        <Link href="/new" className="btn-primary mt-1">
-          Create your first invoice
-        </Link>
+        <div className="mt-2">
+          <CtaLink href="/new">Create your first invoice</CtaLink>
+        </div>
       )}
     </div>
   );
@@ -42,9 +42,7 @@ export default function Dashboard() {
           )}
         </div>
         {isConnected && (
-          <Link href="/new" className="btn-primary">
-            New invoice
-          </Link>
+          <CtaLink href="/new">New invoice</CtaLink>
         )}
       </div>
 
