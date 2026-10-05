@@ -5,8 +5,6 @@ import { arc } from "@/lib/arc";
 
 const noop = () => () => {};
 
-const btn =
-  "rounded-md px-3 py-1.5 text-sm font-medium transition disabled:opacity-50";
 
 export function ConnectButton() {
   const { address, chainId, isConnected } = useAccount();
@@ -16,7 +14,7 @@ export function ConnectButton() {
   // Wallet state only exists in the browser; render a stable placeholder until mounted.
   const mounted = useSyncExternalStore(noop, () => true, () => false);
 
-  if (!mounted) return <div className="h-8 w-28" />;
+  if (!mounted) return <div className="h-10 w-36" />;
 
   if (!isConnected) {
     const connector = connectors[0];
@@ -25,11 +23,11 @@ export function ConnectButton() {
         <button
           onClick={() => connector && connect({ connector, chainId: arc.id })}
           disabled={!connector || isPending}
-          className={`${btn} bg-neutral-900 text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200`}
+          className="btn-primary px-3.5 py-2 text-sm"
         >
-          {isPending ? "Connecting..." : "Connect wallet"}
+          {isPending ? "Connecting…" : "Connect wallet"}
         </button>
-        {error && <span className="mt-1 text-xs text-red-600">{error.message.split("\n")[0]}</span>}
+        {error && <span role="alert" className="mt-1 max-w-56 text-right text-xs text-danger">{error.message.split("\n")[0]}</span>}
       </div>
     );
   }
@@ -39,9 +37,9 @@ export function ConnectButton() {
       <button
         onClick={() => switchChain({ chainId: arc.id })}
         disabled={switching}
-        className={`${btn} bg-amber-500 text-white hover:bg-amber-600`}
+        className="btn bg-accent-soft px-3.5 py-2 text-sm text-accent hover:bg-accent hover:text-accent-ink"
       >
-        {switching ? "Switching..." : "Switch to Arc"}
+        {switching ? "Switching…" : `Switch to ${arc.name}`}
       </button>
     );
   }
@@ -50,8 +48,10 @@ export function ConnectButton() {
     <button
       onClick={() => disconnect()}
       title="Disconnect"
-      className={`${btn} border border-neutral-300 font-mono hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-900`}
+      aria-label={`Connected as ${address}. Disconnect`}
+      className="btn-quiet px-3.5 py-2 font-mono text-sm font-medium"
     >
+      <span aria-hidden className="size-2 rounded-full bg-paid" />
       {address!.slice(0, 6)}…{address!.slice(-4)}
     </button>
   );

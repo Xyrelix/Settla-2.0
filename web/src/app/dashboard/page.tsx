@@ -5,6 +5,20 @@ import { arc } from "@/lib/arc";
 import { settlaAbi, SETTLA_ADDRESS } from "@/lib/settla";
 import { InvoiceCard } from "@/components/InvoiceCard";
 
+function EmptyState({ title, body, cta }: { title: string; body: string; cta?: boolean }) {
+  return (
+    <div className="card flex flex-col items-start gap-3 p-8">
+      <h2 className="font-display text-2xl font-semibold tracking-tight">{title}</h2>
+      <p className="max-w-md text-muted">{body}</p>
+      {cta && (
+        <Link href="/new" className="btn-primary mt-1">
+          Create your first invoice
+        </Link>
+      )}
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { address, isConnected } = useAccount();
   const { data: ids, isLoading, error } = useReadContract({
@@ -17,22 +31,47 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Your invoices</h1>
-        <Link
-          href="/"
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900"
-        >
-          New invoice
-        </Link>
+    <div className="max-w-3xl space-y-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="font-display text-4xl font-semibold tracking-tight">Your invoices</h1>
+          {ids && ids.length > 0 && (
+            <p className="text-muted">
+              {ids.length} {ids.length === 1 ? "invoice" : "invoices"}, newest first
+            </p>
+          )}
+        </div>
+        {isConnected && (
+          <Link href="/new" className="btn-primary">
+            New invoice
+          </Link>
+        )}
       </div>
 
-      {!isConnected && <p className="text-neutral-600 dark:text-neutral-400">Connect your wallet to see your invoices.</p>}
-      {isConnected && isLoading && <p className="text-neutral-500">Loading...</p>}
-      {error && <p className="text-sm text-red-600">Could not load invoices: {error.message.split("\n")[0]}</p>}
+      {!isConnected && (
+        <EmptyState
+          title="Connect to see your invoices"
+          body="Your invoices live on Arc, tied to your wallet address. Connect the wallet you invoice from."
+        />
+      )}
+      {isConnected && isLoading && (
+        <ul className="space-y-3" aria-busy="true" aria-label="Loading invoices…">
+          {[0, 1, 2].map((i) => (
+            <li key={i} className="card h-[5.5rem] animate-pulse opacity-60" />
+          ))}
+        </ul>
+      )}
+      {error && (
+        <p role="alert" className="rounded-xl bg-accent-soft px-4 py-3 text-sm text-danger">
+          Couldn&apos;t load your invoices: {error.message.split("\n")[0]} Refresh the page to try again.
+        </p>
+      )}
       {ids && ids.length === 0 && (
-        <p className="text-neutral-600 dark:text-neutral-400">No invoices yet. Create your first one.</p>
+        <EmptyState
+          title="No invoices yet"
+          body="Create one, share the link or QR code, and it shows up here with its status."
+          cta
+        />
       )}
       {ids && ids.length > 0 && (
         <ul className="space-y-3">

@@ -60,25 +60,34 @@ export function PayButton({ id, amount, onPaid }: { id: bigint; amount: bigint; 
   const busy = status === "approving" || status === "paying";
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <button
         onClick={onPay}
+        aria-live="polite"
         disabled={!isConnected || busy || status === "done" || insufficient}
-        className="w-full rounded-md bg-neutral-900 px-4 py-3 font-medium text-white hover:bg-neutral-700 disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+        className="btn-primary w-full py-3.5 text-lg"
       >
         {!isConnected && "Connect a wallet to pay"}
         {isConnected && status === "idle" && `Pay ${formatUsdc(amount)} USDC`}
-        {status === "approving" && "Approving USDC (1/2)..."}
-        {status === "paying" && "Settling..."}
+        {status === "approving" && "Approving USDC (step 1 of 2)…"}
+        {status === "paying" && "Paying…"}
         {status === "done" && "Paid"}
-        {isConnected && status === "error" && "Failed. Retry"}
+        {isConnected && status === "error" && "Try again"}
       </button>
       {insufficient && status !== "done" && (
-        <p className="text-sm text-red-600">
-          Your wallet holds {formatUsdc(balance)} USDC, less than this invoice. Keep some extra for gas.
+        <p className="rounded-xl bg-accent-soft px-3.5 py-2.5 text-sm text-danger">
+          Your wallet holds {formatUsdc(balance)} USDC, which isn&apos;t enough for this invoice. Keep a little
+          extra for the network fee.
         </p>
       )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="rounded-xl bg-accent-soft px-3.5 py-2.5 text-sm text-danger">
+          {error}
+        </p>
+      )}
+      {isConnected && status === "idle" && !insufficient && (
+        <p className="text-center text-xs text-muted">First-time payers sign twice: once to allow USDC, once to pay.</p>
+      )}
     </div>
   );
 }

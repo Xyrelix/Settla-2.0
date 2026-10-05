@@ -7,21 +7,26 @@ import { useArcTx } from "@/lib/useArcTx";
 import { errorMessage, formatUsdc, settlaAbi, SETTLA_ADDRESS, Status, STATUS_LABEL } from "@/lib/settla";
 
 const STATUS_STYLE: Record<number, string> = {
-  [Status.Open]: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
-  [Status.Paid]: "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300",
-  [Status.Cancelled]: "bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300",
+  [Status.Open]: "bg-accent-soft text-accent",
+  [Status.Paid]: "bg-paid-soft text-paid",
+  [Status.Cancelled]: "bg-line/60 text-muted",
 };
 
 export function StatusBadge({ status }: { status: number }) {
   return (
-    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[status] ?? ""}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[status] ?? ""}`}>
+      <span aria-hidden className="size-1.5 rounded-full bg-current" />
       {STATUS_LABEL[status] ?? "Unknown"}
     </span>
   );
 }
 
+const date = (secs: bigint) =>
+  new Date(Number(secs) * 1000).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+
 export function InvoiceCard({ id }: { id: bigint }) {
   const { send } = useArcTx();
+  const [confirming, setConfirming] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { data: inv, refetch } = useReadContract({
@@ -33,7 +38,7 @@ export function InvoiceCard({ id }: { id: bigint }) {
   });
 
   async function onCancel() {
-    if (!SETTLA_ADDRESS || !confirm(`Cancel invoice #${id}? This cannot be undone.`)) return;
+    if (!SETTLA_ADDRESS) return;
     setCancelling(true);
     setError(null);
     try {
@@ -43,42 +48,69 @@ export function InvoiceCard({ id }: { id: bigint }) {
       setError(errorMessage(err));
     } finally {
       setCancelling(false);
+      setConfirming(false);
     }
   }
 
   if (!inv) {
-    return <li className="h-20 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-800" />;
+    return <li className="card h-[5.5rem] animate-pulse opacity-60" />;
   }
 
   return (
-    <li className="rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
+    <li className="card p-5">
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-neutral-500">#{id.toString()}</span>
+        <div className="min-w-0 space-y-1.5">
+          <div className="flex items-center gap-2.5">
+            <span className="amount text-sm text-muted">#{id.toString()}</span>
             <StatusBadge status={inv.status} />
           </div>
-          <p className="mt-1 truncate">{inv.memo || <span className="text-neutral-500">No memo</span>}</p>
-          <p className="mt-1 text-xs text-neutral-500">
-            Created {new Date(Number(inv.createdAt) * 1000).toLocaleString()}
-            {inv.status === Status.Paid && ` · Paid ${new Date(Number(inv.paidAt) * 1000).toLocaleString()}`}
+          <p className="truncate font-medium">{inv.memo || <span className="text-muted">No note</span>}</p>
+          <p className="text-xs text-muted">
+            {date(inv.createdAt)}
+            {inv.status === Status.Paid && ` · paid ${date(inv.paidAt)}`}
           </p>
         </div>
         <div className="shrink-0 text-right">
-          <p className="font-semibold">{formatUsdc(inv.amount)} USDC</p>
-          <div className="mt-2 flex justify-end gap-3 text-sm">
-            <Link href={`/pay/${id}`} className="underline underline-offset-2">
-              View
-            </Link>
-            {inv.status === Status.Open && (
-              <button onClick={onCancel} disabled={cancelling} className="text-red-600 disabled:opacity-50">
-                {cancelling ? "Cancelling..." : "Cancel"}
-              </button>
+          <p className="amount text-xl font-semibold">
+            {formatUsdc(inv.amount)} <span className="font-sans text-xs font-semibold text-muted">USDC</span>
+          </p>
+          <div className="mt-2 flex items-center justify-end gap-3 text-sm">
+            {confirming ? (
+              <>
+                <span className="text-muted">Cancel it?</span>
+                <button onClick={onCancel} disabled={cancelling} className="font-semibold text-danger disabled:opacity-50">
+                  {cancelling ? "Cancelling…" : "Yes, cancel"}
+                </button>
+                {/* The Cancel button that had focus is gone; land keyboard users on the safe choice. */}
+                <button
+                  onClick={() => setConfirming(false)}
+                  disabled={cancelling}
+                  autoFocus
+                  className="text-muted hover:text-ink"
+                >
+                  Keep
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href={`/pay/${id}`} className="font-medium text-accent underline-offset-4 hover:underline">
+                  View
+                </Link>
+                {inv.status === Status.Open && (
+                  <button onClick={() => setConfirming(true)} className="text-muted transition hover:text-danger">
+                    Cancel
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
       </div>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-3 text-sm text-danger">
+          {error}
+        </p>
+      )}
     </li>
   );
 }

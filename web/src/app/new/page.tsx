@@ -1,41 +1,45 @@
+import type { Metadata } from "next";
 import { CreateInvoiceForm } from "@/components/CreateInvoiceForm";
 import { SETTLA_ADDRESS } from "@/lib/settla";
 
-export default function Home() {
-  return (
-    <div className="space-y-10">
-      <section className="space-y-3">
-        <h1 className="text-3xl font-semibold tracking-tight">Get paid in USDC. Settled in a second.</h1>
-        <p className="text-neutral-600 dark:text-neutral-400">
-          Create an invoice, share the link, and your customer pays straight to your wallet on Arc.
-          Settla never holds your money, and gas is paid in USDC, so it is the only asset you need.
-        </p>
-      </section>
+export const metadata: Metadata = { title: "New invoice" };
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
-        <h2 className="mb-4 text-lg font-semibold">New invoice</h2>
+const NEXT = [
+  "You confirm one transaction in your wallet.",
+  "You get a pay link and a QR code to share.",
+  "Your customer pays, and the USDC lands in your wallet.",
+];
+
+export default function NewInvoice() {
+  return (
+    <div className="grid items-start gap-10 lg:grid-cols-[28rem_1fr] lg:gap-16">
+      <section aria-labelledby="new-invoice" className="card p-6 sm:p-8">
+        <h1 id="new-invoice" className="mb-6 font-display text-3xl font-semibold tracking-tight">
+          New invoice
+        </h1>
         {SETTLA_ADDRESS ? (
           <CreateInvoiceForm />
         ) : (
-          <p className="text-sm text-amber-700 dark:text-amber-400">
+          <p className="text-sm text-danger">
             Set <code>NEXT_PUBLIC_SETTLA_ADDRESS</code> in <code>web/.env.local</code> to the deployed contract
             address, then restart the dev server.
           </p>
         )}
       </section>
 
-      <ol className="grid gap-4 text-sm sm:grid-cols-3">
-        {[
-          ["1. Create", "Enter an amount and a memo. One transaction opens the invoice."],
-          ["2. Share", "Send the pay link to your customer by email, chat, or QR code."],
-          ["3. Settle", "They approve and pay. USDC lands in your wallet instantly."],
-        ].map(([title, body]) => (
-          <li key={title} className="space-y-1">
-            <p className="font-medium">{title}</p>
-            <p className="text-neutral-600 dark:text-neutral-400">{body}</p>
-          </li>
-        ))}
-      </ol>
+      <aside className="space-y-5 lg:pt-8">
+        <h2 className="font-display text-xl font-semibold tracking-tight">What happens next</h2>
+        <ol className="max-w-sm space-y-4">
+          {NEXT.map((step, i) => (
+            <li key={step} className="flex gap-3.5">
+              <span className="amount grid size-8 shrink-0 place-items-center rounded-full bg-accent-soft text-sm font-semibold text-accent">
+                {i + 1}
+              </span>
+              <p className="pt-1 text-muted">{step}</p>
+            </li>
+          ))}
+        </ol>
+      </aside>
     </div>
   );
 }

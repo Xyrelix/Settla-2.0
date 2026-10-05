@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { parseEventLogs, parseUnits } from "viem";
@@ -23,15 +23,22 @@ export function CreateInvoiceForm() {
   const [memo, setMemo] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const amountRef = useRef<HTMLInputElement>(null);
+  const memoRef = useRef<HTMLInputElement>(null);
 
   const trimmed = amount.trim();
   const amountValid = AMOUNT_RE.test(trimmed) && parseUnits(trimmed, USDC_DECIMALS) > 0n;
   const memoLen = memoBytes(memo);
   const memoValid = memoLen <= MAX_MEMO_BYTES;
+  const showAmountError = (submitted || !!trimmed) && !amountValid;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!SETTLA_ADDRESS || !amountValid || !memoValid) return;
+    setSubmitted(true);
+    if (!amountValid) return amountRef.current?.focus();
+    if (!memoValid) return memoRef.current?.focus();
+    if (!SETTLA_ADDRESS) return;
     setBusy(true);
     setError(null);
     try {
@@ -50,43 +57,62 @@ export function CreateInvoiceForm() {
     }
   }
 
-  const input =
-    "w-full rounded-md border border-neutral-300 bg-white px-3 py-2 outline-none focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-300";
-
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <label className="block space-y-1">
-        <span className="text-sm font-medium">Amount (USDC)</span>
-        <input
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          inputMode="decimal"
-          placeholder="25.00"
-          className={input}
-        />
-        {trimmed && !amountValid && (
-          <span className="text-xs text-red-600">Enter a positive amount with up to 6 decimals.</span>
-        )}
-      </label>
-      <label className="block space-y-1">
-        <span className="text-sm font-medium">What is this for?</span>
-        <input
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-          placeholder="Order #1042"
-          className={input}
-        />
-        <span className={`text-xs ${memoValid ? "text-neutral-500" : "text-red-600"}`}>
-          {memoLen}/{MAX_MEMO_BYTES}
+    <form onSubmit={onSubmit} className="space-y-5" noValidate>
+      <label className="block space-y-1.5">
+        <span className="text-sm font-medium">Amount</span>
+        <div className="relative">
+          <input
+            ref={amountRef}
+            name="amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            inputMode="decimal"
+            autoComplete="off"
+            placeholder="25.00"
+            aria-invalid={showAmountError}
+            aria-describedby="amount-error"
+            className="field amount pr-16 text-2xl"
+          />
+          <span className="pointer-events-none absolute inset-y-0 right-4 grid place-items-center text-sm font-semibold text-muted">
+            USDC
+          </span>
+        </div>
+        <span id="amount-error" aria-live="polite" className="block text-sm text-danger empty:hidden">
+          {showAmountError && "Enter an amount above zero, with up to 6 decimals."}
         </span>
       </label>
+      <label className="block space-y-1.5">
+        <span className="flex justify-between text-sm">
+          <span className="font-medium">What&apos;s it for?</span>
+          <span className={`amount ${memoValid ? "text-muted" : "text-danger"}`}>
+            {memoLen}/{MAX_MEMO_BYTES}
+          </span>
+        </span>
+        <input
+          ref={memoRef}
+          name="memo"
+          autoComplete="off"
+          value={memo}
+          onChange={(e) => setMemo(e.target.value)}
+          placeholder="2 loaves of sourdough…"
+          aria-invalid={!memoValid}
+          aria-describedby="memo-hint"
+          className="field"
+        />
+        <span id="memo-hint" className="block text-xs text-muted">Visible to anyone on-chain. Skip names and contact details.</span>
+      </label>
       <button
-        disabled={busy || !isConnected || !SETTLA_ADDRESS || !amountValid || !memoValid}
-        className="rounded-md bg-neutral-900 px-4 py-2 font-medium text-white hover:bg-neutral-700 disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+        disabled={busy || !isConnected || !SETTLA_ADDRESS}
+        className="btn-primary w-full py-3"
       >
-        {busy ? "Creating..." : isConnected ? "Create invoice" : "Connect a wallet to create"}
+        {busy ? "Creating invoice…" : isConnected ? "Create invoice" : "Connect a wallet to start"}
       </button>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="rounded-xl bg-accent-soft px-3.5 py-2.5 text-sm text-danger">
+          {error}
+        </p>
+      )}
     </form>
   );
 }

@@ -1,9 +1,129 @@
 @import "tailwindcss";
 
+/* Warm paper + terracotta. One accent; status colors are muted relatives of the palette. */
 :root {
+  --paper: #fbf6ee;
+  --card: #fffdf9;
+  --ink: #2a2118;
+  --muted: #74655a;
+  --line: #e8ddcf;
+  --accent: #b4532d;
+  --accent-hover: #9a4424;
+  --accent-ink: #fffaf4;
+  --accent-soft: #f5e2d4;
+  --paid: #3f6b2e;
+  --paid-soft: #e4eed9;
+  --danger: #a3361f;
+  --shadow: 42 33 24;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #1a1511;
+    --card: #241d17;
+    --ink: #f3eadf;
+    --muted: #b0a08f;
+    --line: #3b3027;
+    --accent: #e0805a;
+    --accent-hover: #ea9473;
+    --accent-ink: #1a1511;
+    --accent-soft: #3d261a;
+    --paid: #9cc47c;
+    --paid-soft: #25321f;
+    --danger: #f08a6f;
+    --shadow: 0 0 0;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-paid: var(--paid);
+  --color-paid-soft: var(--paid-soft);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-serif);
+}
+
+html {
   color-scheme: light dark;
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent; /* buttons have their own press state */
+}
+
+a,
+button,
+input,
+label {
+  touch-action: manipulation;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100;
+  @apply bg-paper font-sans text-ink antialiased;
+  /* Faint paper grain so the background isn't flat. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@utility card {
+  @apply rounded-2xl bg-card;
+  box-shadow:
+    0 1px 0 rgb(var(--shadow) / 0.04),
+    0 12px 32px -16px rgb(var(--shadow) / 0.18);
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-semibold transition duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+}
+
+@utility btn-primary {
+  @apply btn bg-accent text-accent-ink hover:bg-accent-hover;
+}
+
+@utility btn-quiet {
+  @apply btn border border-line text-ink hover:border-muted hover:bg-card;
+}
+
+@utility field {
+  @apply w-full rounded-xl border border-line bg-paper px-3.5 py-2.5 text-ink transition duration-200 placeholder:text-muted/70 hover:border-muted focus-visible:border-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/20;
+}
+
+@utility amount {
+  @apply font-display tracking-tight;
+  font-variant-numeric: tabular-nums lining-nums;
 }
