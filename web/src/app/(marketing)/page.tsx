@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { StatusBadge } from "@/components/InvoiceCard";
 import { CtaLink } from "@/components/CtaLink";
+import { GlobeBackdrop } from "@/components/GlobeBackdrop";
 import { Status } from "@/lib/settla";
 
 const STEPS = [
@@ -19,6 +20,7 @@ const GOOD_TO_KNOW = [
 function ReceiptPreview() {
   return (
     <div aria-hidden className="rise relative mx-auto w-full max-w-sm select-none py-6 [animation-delay:350ms]">
+      <GlobeBackdrop className="pointer-events-none absolute left-[68%] top-[30%] -z-10 size-[min(34rem,120vw)] -translate-x-1/2 -translate-y-1/2 text-accent opacity-60" />
       {/* A second receipt peeking out behind, for depth. */}
       <div className="card absolute inset-x-6 top-0 h-full translate-y-3 opacity-70 md:translate-y-0 md:-rotate-3" />
       <div className="card relative overflow-hidden md:rotate-1">
@@ -70,7 +72,12 @@ function ReceiptPreview() {
 export default function Landing() {
   return (
     <div className="space-y-24 sm:space-y-32">
-      <section className="grid items-center gap-12 lg:grid-cols-[1fr_24rem] lg:gap-16">
+      <section className="relative isolate grid items-center gap-12 lg:grid-cols-[1fr_24rem] lg:gap-16">
+        {/* Warm glow behind the hero: settles in on load, then drifts only with scroll. */}
+        <div aria-hidden className="pointer-events-none absolute -top-48 left-1/2 -z-20 h-[50rem] w-screen -translate-x-1/2">
+          <span className="glow glow-a" />
+          <span className="glow glow-b" />
+        </div>
         <div className="space-y-7">
           <p className="eyebrow rise">For small shops &amp; freelancers</p>
           <h1 className="rise max-w-2xl font-display [animation-delay:80ms] text-5xl font-semibold leading-[1.04] tracking-tight sm:text-7xl">

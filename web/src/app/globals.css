@@ -248,6 +248,53 @@
   }
 }
 
+/* Hero glow: soft gradients (no blur filters), settle on load, drift with scroll. */
+@keyframes glow-in {
+  from {
+    opacity: 0;
+    scale: 0.85;
+  }
+}
+
+@keyframes glow-drift {
+  to {
+    translate: var(--drift);
+  }
+}
+
+@utility glow {
+  position: absolute;
+  border-radius: 9999px;
+  animation: glow-in 1.6s var(--ease-spring) both;
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation:
+        glow-in 1.6s var(--ease-spring) both,
+        glow-drift linear both;
+      animation-timeline: auto, scroll(root);
+      animation-range: normal, 0 100vh;
+    }
+  }
+}
+
+@utility glow-a {
+  left: 8%;
+  top: 0;
+  width: 44rem;
+  height: 44rem;
+  --drift: 6rem 5rem;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--accent) 24%, transparent), transparent);
+}
+
+@utility glow-b {
+  right: 6%;
+  top: 9rem;
+  width: 36rem;
+  height: 36rem;
+  --drift: -5rem 8rem;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--accent-soft) 85%, transparent), transparent);
+}
+
 @utility eyebrow {
   @apply inline-flex w-fit items-center rounded-full bg-accent-soft px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-accent-hover;
 }
