@@ -11,11 +11,13 @@ const POINTS = Array.from({ length: N }, (_, i) => {
 });
 
 const TILT = 0.35;
+const SPIN = 0.18; // radians per second: one turn about every 35s
 
 /**
- * Decorative dotted globe. It spins in once on load and settles (~4s), then turns only
- * with scroll, so it never loops on its own. Draws only while on screen and only when the
- * angle changes; colour comes from CSS (`text-*` on the canvas) and follows the theme.
+ * Decorative dotted globe. It spins in on load, then keeps a slow steady turn (plus a
+ * little extra with scroll). Stays still under reduced motion, and only draws while on
+ * screen (requestAnimationFrame also pauses in background tabs). Colour comes from CSS
+ * (`text-*` on the canvas) and follows the theme.
  */
 export function GlobeBackdrop({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -75,7 +77,8 @@ export function GlobeBackdrop({ className = "" }: { className?: string }) {
       let angle = 0.6;
       if (!reduce) {
         const p = Math.min((now - start) / 4000, 1);
-        angle += 2.4 * (1 - p) ** 3 + window.scrollY * 0.0025; // ease-out spin-in, then scroll
+        // fast spin-in that eases into the steady turn (same direction), plus a little extra with scroll
+        angle += -2.4 * (1 - p) ** 3 + ((now - start) / 1000) * SPIN + window.scrollY * 0.0025;
       }
       if (angle !== lastAngle) {
         lastAngle = angle;
