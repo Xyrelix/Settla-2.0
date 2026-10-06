@@ -75,13 +75,13 @@ export function PayButton({ id, amount, onPaid }: { id: bigint; amount: bigint; 
         {isConnected && status === "error" && "Try again"}
       </button>
       {insufficient && status !== "done" && (
-        <p className="rounded-xl bg-accent-soft px-3.5 py-2.5 text-sm text-danger">
+        <p className="rounded-xl bg-danger-soft px-3.5 py-2.5 text-sm text-danger">
           Your wallet holds {formatUsdc(balance)} USDC, which isn&apos;t enough for this invoice. Keep a little
           extra for the network fee.
         </p>
       )}
       {error && (
-        <p role="alert" className="rounded-xl bg-accent-soft px-3.5 py-2.5 text-sm text-danger">
+        <p role="alert" className="rounded-xl bg-danger-soft px-3.5 py-2.5 text-sm text-danger">
           {error}
         </p>
       )}

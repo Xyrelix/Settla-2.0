@@ -60,7 +60,7 @@ export default function Dashboard() {
         </ul>
       )}
       {error && (
-        <p role="alert" className="rounded-xl bg-accent-soft px-4 py-3 text-sm text-danger">
+        <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger">
           Couldn&apos;t load your invoices: {error.message.split("\n")[0]} Refresh the page to try again.
         </p>
       )}

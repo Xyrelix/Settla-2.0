@@ -7,7 +7,7 @@ import { useArcTx } from "@/lib/useArcTx";
 import { errorMessage, formatUsdc, settlaAbi, SETTLA_ADDRESS, Status, STATUS_LABEL } from "@/lib/settla";
 
 const STATUS_STYLE: Record<number, string> = {
-  [Status.Open]: "bg-accent-soft text-accent",
+  [Status.Open]: "bg-accent-soft text-accent-hover",
   [Status.Paid]: "bg-paid-soft text-paid",
   [Status.Cancelled]: "bg-line/60 text-muted",
 };

@@ -109,7 +109,7 @@ export function CreateInvoiceForm() {
         {busy ? "Creating invoice…" : isConnected ? "Create invoice" : "Connect a wallet to start"}
       </button>
       {error && (
-        <p role="alert" className="rounded-xl bg-accent-soft px-3.5 py-2.5 text-sm text-danger">
+        <p role="alert" className="rounded-xl bg-danger-soft px-3.5 py-2.5 text-sm text-danger">
           {error}
         </p>
       )}
