@@ -2,6 +2,9 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/InvoiceCard";
 import { CtaLink } from "@/components/CtaLink";
 import { GlobeBackdrop } from "@/components/GlobeBackdrop";
+import { CountUp } from "@/components/CountUp";
+import { Magnetic } from "@/components/Magnetic";
+import { SpotlightGrid } from "@/components/Spotlight";
 import { Status } from "@/lib/settla";
 
 const STEPS = [
@@ -88,9 +91,11 @@ export default function Landing() {
             to your wallet, with no card fees and nobody holding it in between.
           </p>
           <div className="rise flex flex-wrap items-center gap-x-6 gap-y-4 [animation-delay:240ms]">
-            <CtaLink href="/new" large>
-              Create an invoice
-            </CtaLink>
+            <Magnetic>
+              <CtaLink href="/new" large>
+                Create an invoice
+              </CtaLink>
+            </Magnetic>
             <Link href="/pay/1" className="font-medium text-ink underline decoration-line decoration-2 underline-offset-[6px] transition hover:decoration-accent">
               See a paid invoice
             </Link>
@@ -109,8 +114,14 @@ export default function Landing() {
         </div>
         <ol className="space-y-8">
           {STEPS.map(([title, body], i) => (
-            <li key={title} className="reveal flex gap-5">
-              <span className="amount grid size-12 shrink-0 place-items-center rounded-2xl bg-accent-soft text-xl font-semibold text-accent">
+            <li key={title} className="reveal relative flex gap-5">
+              {/* Connector to the next step; fills as this step scrolls past. */}
+              {i < STEPS.length - 1 && (
+                <span aria-hidden className="absolute -bottom-8 left-6 top-12 w-0.5 -translate-x-1/2 overflow-hidden bg-line">
+                  <span className="step-fill block size-full bg-accent" />
+                </span>
+              )}
+              <span className="step-num amount relative z-10 grid size-12 shrink-0 place-items-center rounded-2xl bg-accent-soft text-xl font-semibold text-accent">
                 {i + 1}
               </span>
               <div className="space-y-1 pt-1.5">
@@ -129,8 +140,8 @@ export default function Landing() {
             What you get
           </h2>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <article className="card reveal flex flex-col gap-6 p-7 sm:col-span-2">
+        <SpotlightGrid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <article className="card spotlight reveal flex flex-col gap-6 p-7 sm:col-span-2">
             <div aria-hidden className="flex items-center gap-3 rounded-2xl bg-paper p-4 text-sm">
               <span className="rounded-full bg-card px-3 py-1.5 font-mono shadow-[0_0_0_1px_var(--hairline)]">Customer</span>
               <span className="relative h-0.5 flex-1 rounded-full bg-line [container-type:inline-size]">
@@ -149,18 +160,22 @@ export default function Landing() {
             </div>
           </article>
 
-          <article className="card reveal flex flex-col justify-between gap-6 p-7 lg:row-span-2">
+          <article className="card spotlight reveal flex flex-col justify-between gap-6 p-7 lg:row-span-2">
             <div aria-hidden className="space-y-1">
               <p className="amount text-7xl font-semibold leading-none text-accent">&lt;1s</p>
               <p className="text-sm font-medium text-muted">from payment to final on Arc</p>
             </div>
-            <ol aria-hidden className="relative space-y-4 border-l-2 border-dashed border-line pl-5 text-sm">
+            <ol aria-hidden className="relative space-y-4 border-l-2 border-dashed border-line pl-5 text-sm [view-timeline-name:--finality]">
               {["Customer signs the payment", "Arc commits the block", "Invoice shows Paid"].map((step, i) => (
                 <li key={step} className="relative">
                   <span
-                    className={`absolute -left-[1.6875rem] top-1 size-3 rounded-full ring-4 ring-card ${
-                      i === 2 ? "bg-paid" : "bg-accent"
-                    }`}
+                    className="finality-dot absolute -left-[1.6875rem] top-1 size-3 rounded-full ring-4 ring-card"
+                    style={
+                      {
+                        "--dot": i === 2 ? "var(--paid)" : "var(--accent)",
+                        animationRange: `cover ${18 + 9 * i}% cover ${23 + 9 * i}%`,
+                      } as React.CSSProperties
+                    }
                   />
                   <span className={i === 2 ? "font-semibold text-paid" : "text-ink"}>{step}</span>
                 </li>
@@ -175,15 +190,19 @@ export default function Landing() {
             </div>
           </article>
 
-          <article className="card reveal flex flex-col gap-6 p-7">
+          <article className="card spotlight reveal flex flex-col gap-6 p-7">
             <dl aria-hidden className="amount space-y-2 rounded-2xl bg-paper p-4 text-sm">
               <div className="flex justify-between">
                 <dt className="font-sans text-muted">Invoice</dt>
-                <dd className="font-semibold">18.50 USDC</dd>
+                <dd className="font-semibold">
+                  <CountUp value={18.5} decimals={2} /> USDC
+                </dd>
               </div>
               <div className="flex justify-between">
                 <dt className="font-sans text-muted">Network fee</dt>
-                <dd>0.002 USDC</dd>
+                <dd>
+                  <CountUp value={0.002} decimals={3} /> USDC
+                </dd>
               </div>
             </dl>
             <div className="space-y-1.5">
@@ -194,7 +213,7 @@ export default function Landing() {
             </div>
           </article>
 
-          <article className="card reveal flex flex-col gap-6 p-7">
+          <article className="card spotlight reveal flex flex-col gap-6 p-7">
             <div aria-hidden className="flex items-center justify-between gap-3 rounded-2xl bg-paper p-4">
               <span className="btn-primary pointer-events-none px-4 py-2 text-sm">Connect wallet</span>
               <span className="text-right text-sm leading-tight text-muted">
@@ -209,7 +228,7 @@ export default function Landing() {
               </p>
             </div>
           </article>
-        </div>
+        </SpotlightGrid>
       </section>
 
       <section aria-labelledby="know" className="card reveal grid gap-8 p-8 sm:p-10 lg:grid-cols-[16rem_1fr] lg:gap-12">
@@ -217,8 +236,8 @@ export default function Landing() {
           Good to know
         </h2>
         <dl className="grid gap-x-10 gap-y-6 sm:grid-cols-2">
-          {GOOD_TO_KNOW.map(([title, body]) => (
-            <div key={title}>
+          {GOOD_TO_KNOW.map(([title, body], i) => (
+            <div key={title} className="reveal" style={{ animationRange: `entry ${10 + 12 * i}% cover ${30 + 8 * i}%` }}>
               <dt className="font-semibold">{title}</dt>
               <dd className="mt-1 text-muted">{body}</dd>
             </div>
@@ -232,9 +251,11 @@ export default function Landing() {
           <p className="text-muted">It takes about a minute. All you need is a wallet with a little USDC.</p>
         </div>
         <div className="shrink-0">
-          <CtaLink href="/new" large>
-            Create an invoice
-          </CtaLink>
+          <Magnetic>
+            <CtaLink href="/new" large shimmer>
+              Create an invoice
+            </CtaLink>
+          </Magnetic>
         </div>
       </section>
     </div>
