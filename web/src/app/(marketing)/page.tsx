@@ -9,13 +9,6 @@ const STEPS = [
   ["Get paid", "They pay in USDC and the money lands in your wallet about a second later."],
 ];
 
-const REASONS = [
-  ["It goes straight to you", "Payments move from your customer's wallet to yours. Settla never touches the money, so there's nothing to withdraw and no one to wait on."],
-  ["Paid in about a second", "Arc confirms a payment the moment it happens, so nothing sits in “pending” for days and there is no transfer to chase."],
-  ["One currency for everything", "Even the network fee is paid in USDC, a dollar stablecoin. You never need to buy a second coin just to get paid."],
-  ["No sign-up, no monthly fee", "Connect a wallet and send your first invoice. Each invoice costs a fraction of a cent in network fees."],
-];
-
 const GOOD_TO_KNOW = [
   ["Notes are public.", "Invoices live on a public blockchain, so keep names and phone numbers out of the note."],
   ["Two taps the first time.", "A new customer approves USDC once, then pays. After that it's one tap."],
@@ -32,7 +25,15 @@ function ReceiptPreview() {
         <div className="space-y-5 p-7">
           <div className="flex items-center justify-between">
             <span className="amount text-sm text-muted">Invoice #1042</span>
-            <StatusBadge status={Status.Paid} />
+            {/* Plays once after load: Open, paying, Paid. Ends (and stays) on Paid. */}
+            <span className="grid justify-items-end">
+              <span className="receipt-leave col-start-1 row-start-1">
+                <StatusBadge status={Status.Open} />
+              </span>
+              <span className="receipt-enter col-start-1 row-start-1">
+                <StatusBadge status={Status.Paid} />
+              </span>
+            </span>
           </div>
           <div className="space-y-1.5">
             <p className="font-medium">Sourdough loaf &amp; 2 flat whites</p>
@@ -49,7 +50,17 @@ function ReceiptPreview() {
             <span className="text-muted">Pay to</span>
             <span className="font-mono">0x7a3F…c91E</span>
           </div>
-          <p className="rounded-xl bg-paid-soft px-4 py-2.5 font-medium text-paid">Paid 0.8 seconds after scanning.</p>
+          <div className="grid">
+            <div className="receipt-pending col-start-1 row-start-1 space-y-2 rounded-xl bg-accent-soft px-4 py-2.5">
+              <p className="font-medium text-accent-hover">Customer is paying…</p>
+              <div className="h-1 overflow-hidden rounded-full bg-accent/15">
+                <div className="receipt-bar h-full rounded-full bg-accent" />
+              </div>
+            </div>
+            <p className="receipt-enter col-start-1 row-start-1 self-center rounded-xl bg-paid-soft px-4 py-2.5 font-medium text-paid">
+              Paid 0.8 seconds after scanning.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -111,13 +122,86 @@ export default function Landing() {
             What you get
           </h2>
         </div>
-        <div className="grid gap-x-16 gap-y-10 sm:grid-cols-2">
-          {REASONS.map(([title, body]) => (
-            <div key={title} className="reveal space-y-2 border-t-2 border-accent/30 pt-5">
-              <h3 className="font-display text-2xl font-semibold tracking-tight">{title}</h3>
-              <p className="max-w-md leading-relaxed text-muted">{body}</p>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <article className="card reveal flex flex-col gap-6 p-7 sm:col-span-2">
+            <div aria-hidden className="flex items-center gap-3 rounded-2xl bg-paper p-4 text-sm">
+              <span className="rounded-full bg-card px-3 py-1.5 font-mono shadow-[0_0_0_1px_var(--hairline)]">Customer</span>
+              <span className="relative h-0.5 flex-1 rounded-full bg-line [container-type:inline-size]">
+                <span className="coin absolute -top-3 left-0 grid size-6 place-items-center rounded-full bg-accent text-[0.625rem] font-bold text-accent-ink">
+                  $
+                </span>
+              </span>
+              <span className="rounded-full bg-accent-soft px-3 py-1.5 font-mono text-accent-hover">You</span>
             </div>
-          ))}
+            <div className="space-y-1.5">
+              <h3 className="font-display text-2xl font-semibold tracking-tight">It goes straight to you</h3>
+              <p className="max-w-lg leading-relaxed text-muted">
+                Payments move from your customer&apos;s wallet to yours in one transaction. Settla never touches the
+                money, so there&apos;s nothing to withdraw and no one to wait on.
+              </p>
+            </div>
+          </article>
+
+          <article className="card reveal flex flex-col justify-between gap-6 p-7 lg:row-span-2">
+            <div aria-hidden className="space-y-1">
+              <p className="amount text-7xl font-semibold leading-none text-accent">&lt;1s</p>
+              <p className="text-sm font-medium text-muted">from payment to final on Arc</p>
+            </div>
+            <ol aria-hidden className="relative space-y-4 border-l-2 border-dashed border-line pl-5 text-sm">
+              {["Customer signs the payment", "Arc commits the block", "Invoice shows Paid"].map((step, i) => (
+                <li key={step} className="relative">
+                  <span
+                    className={`absolute -left-[1.6875rem] top-1 size-3 rounded-full ring-4 ring-card ${
+                      i === 2 ? "bg-paid" : "bg-accent"
+                    }`}
+                  />
+                  <span className={i === 2 ? "font-semibold text-paid" : "text-ink"}>{step}</span>
+                </li>
+              ))}
+            </ol>
+            <div className="space-y-1.5">
+              <h3 className="font-display text-2xl font-semibold tracking-tight">Paid in about a second</h3>
+              <p className="leading-relaxed text-muted">
+                Arc confirms a payment the moment it happens, so nothing sits in “pending” for days and there is no
+                transfer to chase.
+              </p>
+            </div>
+          </article>
+
+          <article className="card reveal flex flex-col gap-6 p-7">
+            <dl aria-hidden className="amount space-y-2 rounded-2xl bg-paper p-4 text-sm">
+              <div className="flex justify-between">
+                <dt className="font-sans text-muted">Invoice</dt>
+                <dd className="font-semibold">18.50 USDC</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="font-sans text-muted">Network fee</dt>
+                <dd>0.002 USDC</dd>
+              </div>
+            </dl>
+            <div className="space-y-1.5">
+              <h3 className="font-display text-xl font-semibold tracking-tight">One currency for everything</h3>
+              <p className="leading-relaxed text-muted">
+                Even the network fee is paid in USDC, a dollar stablecoin. You never buy a second coin to get paid.
+              </p>
+            </div>
+          </article>
+
+          <article className="card reveal flex flex-col gap-6 p-7">
+            <div aria-hidden className="flex items-center justify-between gap-3 rounded-2xl bg-paper p-4">
+              <span className="btn-primary pointer-events-none px-4 py-2 text-sm">Connect wallet</span>
+              <span className="text-right text-sm leading-tight text-muted">
+                <span className="amount block whitespace-nowrap font-semibold text-ink">~0.004 USDC</span>
+                per invoice
+              </span>
+            </div>
+            <div className="space-y-1.5">
+              <h3 className="font-display text-xl font-semibold tracking-tight">No sign-up, no monthly fee</h3>
+              <p className="leading-relaxed text-muted">
+                Connect a wallet and send your first invoice. You only pay a fraction of a cent in network fees.
+              </p>
+            </div>
+          </article>
         </div>
       </section>
 
