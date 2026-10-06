@@ -7,10 +7,10 @@ const body = Figtree({ subsets: ["latin"], variable: "--font-body" });
 const serif = Fraunces({ subsets: ["latin"], variable: "--font-serif" });
 
 export const metadata: Metadata = {
-  title: { default: "Settla: get paid in USDC", template: "%s · Settla" },
+  title: { default: "Settla: Get paid in USDC", template: "%s · Settla" },
   description: "Invoices for small businesses, paid in USDC straight to your wallet on Arc. Settla never holds your money.",
   openGraph: {
-    title: "Settla: get paid in USDC",
+    title: "Settla: Get paid in USDC",
     description: "Invoices for small businesses, paid in USDC straight to your wallet on Arc.",
     type: "website",
   },
