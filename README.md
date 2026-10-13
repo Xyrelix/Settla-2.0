@@ -14,7 +14,7 @@ never holds funds, and because Arc uses USDC for gas, a small business only ever
 | --- | --- |
 | App | [settla-seven.vercel.app](https://settla-seven.vercel.app) |
 | Contract (verified) | [`0x70425dE60f324D888997f4E54d841cde77401386`](https://explorer.arc.io/address/0x70425dE60f324D888997f4E54d841cde77401386#code) |
-| Demo video | [59 s: create, scan, pay, settled](https://x.com/Dayston_/status/2110045154413310349) |
+| Demo video | [59 s: create, scan, pay, settled](https://youtu.be/tiOl89qWRk4) ([also on X](https://x.com/Dayston_/status/2110045154413310349)) |
 | Try it | an open demo invoice, [settla-seven.vercel.app/pay/1](https://settla-seven.vercel.app/pay/1) |
 | Builder | [@Dayston_](https://x.com/Dayston_) |
 
