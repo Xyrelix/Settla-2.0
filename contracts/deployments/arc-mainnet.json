@@ -1,1 +1,7 @@
-{}
+{
+  "network": "arcMainnet",
+  "chainId": 5042,
+  "address": "0x70425dE60f324D888997f4E54d841cde77401386",
+  "usdc": "0x3600000000000000000000000000000000000000",
+  "txHash": "0x3a7a6f7d444de0798c27f8a6d8fdda6704156e7ab56e3c81214222bc5df1a7fe"
+}
