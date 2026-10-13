@@ -12,10 +12,10 @@ never holds funds, and because Arc uses USDC for gas, a small business only ever
 
 | | |
 | --- | --- |
-| App | [settla-seven.vercel.app](https://settla-seven.vercel.app) (testnet until the mainnet deploy) |
-| Contract (verified) | TODO: [`0x…`](https://explorer.arc.io/address/0x…#code) |
+| App | [settla-seven.vercel.app](https://settla-seven.vercel.app) |
+| Contract (verified) | [`0x70425dE60f324D888997f4E54d841cde77401386`](https://explorer.arc.io/address/0x70425dE60f324D888997f4E54d841cde77401386#code) |
 | Demo video | TODO: link (60–90 s: create, scan, pay, settled) |
-| Try it | TODO: an open demo invoice, `https://settla-seven.vercel.app/pay/<id>` |
+| Try it | an open demo invoice, [settla-seven.vercel.app/pay/1](https://settla-seven.vercel.app/pay/1) |
 | Builder | TODO: GitHub / X profile |
 
 ### Proof of use
@@ -24,9 +24,10 @@ Real transactions on Arc mainnet:
 
 | Action | Invoice | Amount | Transaction |
 | --- | --- | --- | --- |
-| Create | #1 | TODO | [TODO](https://explorer.arc.io/tx/0x…) |
-| Pay | #1 | TODO | [TODO](https://explorer.arc.io/tx/0x…) |
-| Cancel | #2 | TODO | [TODO](https://explorer.arc.io/tx/0x…) |
+| Create | #1 | 1 USDC | [`0xa892fb38…cfe1d01`](https://explorer.arc.io/tx/0xa892fb38e2dc5b3d6064e402d8459d2d39feea504f3674a88230f1ec3cfe1d01) |
+| Pay | #1 | 1 USDC | [`0xb09d1434…393c4bee`](https://explorer.arc.io/tx/0xb09d1434acdcd0ee61fa64723d58a9006757fe3e4009093f8a3dcffa393c4bee) |
+| Create | #2 | 2 USDC | [`0x06f47664…b368b26`](https://explorer.arc.io/tx/0x06f47664baced28dc1f56940aa61e62dfbe328288d7f4b447804f4676b368b26) |
+| Cancel | #2 | 2 USDC | [`0x81483226…fe52de9b`](https://explorer.arc.io/tx/0x814832261f7b2ac19e7dc362641b103d02da1c64195440908ccddcc0fe52de9b) |
 
 ## What it uses Arc for
 
