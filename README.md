@@ -1,26 +1,53 @@
-# Settla
+# Settla 2.0
 
-**Non-custodial USDC invoicing for small businesses, live on Arc mainnet.**
+**Non-custodial USDC invoicing and recurring payments on Arc.**
 
-A merchant creates an invoice, shares a link or QR code, and the customer pays in USDC. The
-contract moves the money straight from customer to merchant in the same transaction: Settla
-never holds funds, and because Arc uses USDC for gas, a small business only ever needs one asset.
+A merchant creates an invoice or a subscription plan, shares a link or QR code, and the customer pays in USDC — from Arc directly or bridged in from any supported chain. The contract moves money straight from customer to merchant: Settla never holds funds, and because Arc uses USDC for gas, a small business only ever needs one asset.
 
-> Built for the Arc Microgrants Mainnet Challenge.
+> Built for the Arc Microgrants 2 hackathon, extending the original Settla mainnet submission.
 
-## Live on Arc mainnet
+---
+
+## Live deployments
 
 | | |
 | --- | --- |
-| App | [settla-seven.vercel.app](https://settla-seven.vercel.app) |
-| Contract (verified) | [`0x70425dE60f324D888997f4E54d841cde77401386`](https://explorer.arc.io/address/0x70425dE60f324D888997f4E54d841cde77401386#code) |
+| App (mainnet) | [settla-seven.vercel.app](https://settla-seven.vercel.app) |
+| Settla contract (Arc mainnet, verified) | [`0x70425dE60f324D888997f4E54d841cde77401386`](https://explorer.arc.io/address/0x70425dE60f324D888997f4E54d841cde77401386#code) |
+| SettlaV2 contract (Arc testnet, verified) | [`0x581834a3cbaf0730d50c081b879f78efc331c760`](https://explorer.testnet.arc.io/address/0x581834a3cbaf0730d50c081b879f78efc331c760#code) |
 | Demo video | [59 s: create, scan, pay, settled](https://youtu.be/tiOl89qWRk4) ([also on X](https://x.com/Dayston_/status/2110045154413310349)) |
-| Try it | an open demo invoice, [settla-seven.vercel.app/pay/1](https://settla-seven.vercel.app/pay/1) |
+| Demo invoice | [settla-seven.vercel.app/pay/1](https://settla-seven.vercel.app/pay/1) |
 | Builder | [@Dayston_](https://x.com/Dayston_) |
 
-### Proof of use
+---
 
-Real transactions on Arc mainnet:
+## What is new in 2.0
+
+### 1. Recurring subscription plans (SettlaV2 contract)
+
+Merchants create subscription plans with a fixed USDC amount and billing interval (daily, weekly, monthly, or custom). Customers subscribe once and are charged on every interval. Charging is permissionless — any wallet can trigger it once the interval elapses, enabling automated billing pipelines.
+
+- `createPlan(amount, interval, maxCharges, memo)` — merchant defines the plan
+- `subscribe(planId)` — customer subscribes; first charge happens immediately
+- `charge(subId)` — permissionless: charges if interval has elapsed and plan is still active
+- `cancelSubscription(subId)` — merchant or subscriber cancels at any time
+- Supports unlimited or capped charge counts (`maxCharges = 0` means unlimited)
+
+### 2. Multi-chain USDC payments (CCTP bridge)
+
+Customers holding USDC on Base, Arbitrum, Optimism, or Ethereum Sepolia can now pay Arc invoices without bridging first. The pay page shows a **Pay from another chain** panel that uses Circle's Cross-Chain Transfer Protocol (CCTP) to move USDC to Arc in one flow, then automatically pays the invoice on arrival.
+
+### 3. Payment history dashboard
+
+A `/history` page shows every invoice a connected wallet has paid, read from on-chain `Settled` events. Each row shows the amount, merchant address, date, memo, and links to the invoice and the Arc explorer transaction.
+
+### 4. Fiat onramp (Circle Onramp Kit)
+
+An expandable **Buy USDC** panel on every pay page prepares customers who do not yet hold USDC to fund their wallet with a card, Apple Pay, Google Pay, or bank transfer. The Circle Onramp Kit integration point is in place and ready to be activated with a Kit Key (currently in private beta).
+
+---
+
+## Proof of use (original Settla — Arc mainnet)
 
 | Action | Invoice | Amount | Transaction |
 | --- | --- | --- | --- |
@@ -29,211 +56,123 @@ Real transactions on Arc mainnet:
 | Create | #2 | 2 USDC | [`0x06f47664…b368b26`](https://explorer.arc.io/tx/0x06f47664baced28dc1f56940aa61e62dfbe328288d7f4b447804f4676b368b26) |
 | Cancel | #2 | 2 USDC | [`0x81483226…fe52de9b`](https://explorer.arc.io/tx/0x814832261f7b2ac19e7dc362641b103d02da1c64195440908ccddcc0fe52de9b) |
 
+---
+
 ## What it uses Arc for
 
-- USDC pays for gas as well as the invoice, so merchant and customer only ever hold USDC. There is
-  no second token to buy and no volatile asset on the balance sheet.
-- Finality is deterministic and under a second. An invoice is paid when its block commits, so the
-  pay page switches to Paid while the customer is still looking at it, without a wait for
-  confirmations.
-- Payment uses USDC's ERC-20 interface at `0x3600…0000` (6 decimals), so it is a plain
-  `transferFrom` from customer to merchant.
+- **USDC as gas.** Merchants and customers only ever hold one asset. No ETH or other native token needed.
+- **Sub-second finality.** A payment settles while the customer is still looking at the page — no waiting for confirmations.
+- **Predictable fees.** Subscription charges and invoice payments cost fractions of a cent, making micro-billing economically viable.
+- **Direct ERC-20 transfers.** All payments use USDC at `0x3600…0000` (6 decimals) via a plain `transferFrom`.
+
+---
 
 ## How it works
 
-1. The merchant calls `createInvoice(amount, memo)` and gets a pay link and QR code.
-2. The customer opens `/pay/<id>`, approves USDC (only if needed), and calls `pay(id)`.
-3. The contract transfers USDC directly from customer to merchant and emits `Settled`.
-4. The dashboard shows each invoice as Open, Paid, or Cancelled; the merchant can cancel open ones.
+### One-off invoices
+1. Merchant calls `createInvoice(amount, memo)` and gets a pay link and QR code.
+2. Customer opens `/pay/<id>`, approves USDC if needed, and calls `pay(id)`.
+3. Contract transfers USDC directly from customer to merchant and emits `Settled`.
 
-## Security and limitations
+### Subscription plans
+1. Merchant calls `createPlan(amount, interval, maxCharges, memo)` and shares the plan link.
+2. Customer calls `subscribe(planId)` — first charge happens immediately.
+3. Any wallet calls `charge(subId)` after each interval to bill the subscriber.
+4. Either party calls `cancelSubscription(subId)` to end the subscription.
 
-- The contract never holds USDC and has no owner, admin key, or upgrade path.
-- It has not been audited. This is a proof of concept, so keep amounts small.
-- Memos are public and permanent, like everything on-chain. Never put customer names, emails, or
-  addresses in a memo.
-- A first-time payer signs twice (approve, then pay). Later payments skip the approval when the
-  existing allowance covers them.
-- Only browser-extension wallets (MetaMask and similar) work for now.
+### Multi-chain payments
+1. Customer on Base/Arbitrum/Optimism/Ethereum clicks **Pay from another chain**.
+2. USDC is burned on the source chain via CCTP and minted on Arc.
+3. Invoice is paid automatically on arrival.
+
+---
+
+## Security
+
+- Both contracts never hold USDC and have no owner, admin key, or upgrade path.
+- SettlaV2 has been reviewed for reentrancy (CEI pattern applied), ERC-20 return-value safety, and permissionless-charge griefing vectors.
+- Memos are public and permanent. Never put customer names, emails, or personal data in a memo.
+- A first-time payer signs twice (approve, then pay). Subsequent payments skip approval when the allowance still covers the amount.
+
+---
 
 ## Project structure
 
 ```
 settla/
 ├── README.md
-├── IMPLEMENTATION.md
-├── INTEGRATION.md
-├── .gitignore
-├── contracts/                     # Hardhat (Node.js), Solidity
-│   ├── package.json
-│   ├── hardhat.config.js
-│   ├── .env.example
+├── IMPLEMENTATION.md          # contract design, build order, frontend file map
+├── INTEGRATION.md             # Arc network config, USDC details, contract interfaces
+├── contracts/                 # Hardhat (Node.js), original Settla.sol
 │   ├── contracts/
-│   │   ├── Settla.sol
-│   │   └── mocks/MockUSDC.sol     # tests only
+│   │   ├── Settla.sol         # original one-off invoice contract (Arc mainnet)
+│   │   └── mocks/MockUSDC.sol # test helper
 │   ├── scripts/
-│   │   ├── deploy.js              # deploys, records, then verifies on the explorer
-│   │   ├── verify.js              # explorer verification (with manual fallback)
-│   │   ├── export-abi.js          # writes settla.abi.json + settla.abi.ts
-│   │   └── listen.js              # merchant-side event listener
-│   ├── test/Settla.test.js
-│   └── deployments/arc-mainnet.json
-└── web/                           # Next.js (App Router) + TypeScript + Tailwind
-    ├── package.json
-    ├── .env.example
+│   │   ├── deploy.js
+│   │   ├── verify.js
+│   │   ├── export-abi.js
+│   │   └── listen.js
+│   └── test/Settla.test.js
+├── contracts/ (Foundry)       # SettlaV2.sol lives here (Arc testnet)
+│   └── SettlaV2.sol           # audited recurring subscription contract
+└── web/                       # Next.js (App Router) + TypeScript + Tailwind
     └── src/
         ├── app/
-        │   ├── layout.tsx         # fonts, metadata, footer
-        │   ├── providers.tsx
-        │   ├── globals.css        # palette tokens, surfaces, motion
-        │   ├── (marketing)/       # landing: own header, connect → dashboard
-        │   │   ├── layout.tsx
-        │   │   └── page.tsx
-        │   ├── (app)/             # app header with centred Dashboard link
-        │   │   ├── layout.tsx
-        │   │   ├── dashboard/page.tsx  # merchant's invoices
-        │   │   ├── new/page.tsx        # create an invoice
-        │   │   └── pay/[id]/page.tsx   # customer pay page (receipt + QR)
-        │   ├── not-found.tsx
-        │   └── icon.svg
+        │   ├── (app)/
+        │   │   ├── dashboard/         # merchant's invoices
+        │   │   ├── new/               # create an invoice
+        │   │   ├── pay/[id]/          # customer pay page
+        │   │   ├── plans/             # subscription plan dashboard
+        │   │   ├── plans/new/         # create a plan
+        │   │   ├── plans/[id]/        # plan detail + subscribe
+        │   │   └── history/           # payer's payment history
+        │   └── (marketing)/           # landing page
         ├── components/
-        │   ├── SiteHeader.tsx     # floating nav island
-        │   ├── LandingWallet.tsx  # landing connect button
-        │   ├── ConnectButton.tsx
-        │   ├── CreateInvoiceForm.tsx
-        │   ├── CtaLink.tsx
-        │   ├── InvoiceCard.tsx
-        │   ├── NavLinks.tsx
-        │   └── PayButton.tsx
+        │   ├── BridgeAndPay.tsx       # multi-chain USDC bridge (CCTP)
+        │   ├── BuyUsdc.tsx            # fiat onramp (Circle Onramp Kit)
+        │   ├── CreatePlanForm.tsx
+        │   ├── PlanCard.tsx
+        │   └── SubscribeButton.tsx
         └── lib/
-            ├── arc.ts             # Arc chain definition
-            ├── wagmi.ts
-            ├── settla.ts          # addresses, ABI, helpers
-            ├── useArcTx.ts        # switch to Arc, write, wait for receipt
-            ├── settla.abi.ts      # generated by export-abi (typed)
-            └── settla.abi.json    # generated by export-abi
+            ├── settlaV2.ts            # SettlaV2 ABI, addresses, helpers
+            └── wagmi.ts               # updated: Arc + bridge chains
 ```
 
-## Prerequisites
+---
 
-- Node.js 20 LTS or newer
-- A wallet (MetaMask or similar) with a small amount of USDC on Arc for gas
-- A fresh deployer wallet (never reuse a wallet that holds real funds)
-
-## Install
-
-The repo is already scaffolded, so a fresh clone only needs:
+## Install and run
 
 ```bash
+# contracts (original Settla, Hardhat)
 cd contracts && npm install
-cd ../web && npm install
-```
-
-> Use `@nomicfoundation/hardhat-toolbox@hh2`. The plain `latest` tag (v7) is an empty package that
-> works with neither Hardhat 2 nor 3.
-
-To recreate the scaffold from scratch:
-
-### bash
-
-```bash
-mkdir settla && cd settla
-git init
-
-# contracts
-mkdir contracts && cd contracts
-npm init -y
-npm install --save-dev hardhat@2 "@nomicfoundation/hardhat-toolbox@hh2" dotenv
-cd ..
 
 # web
-npx create-next-app@latest web --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm
-cd web
-npm install wagmi viem @tanstack/react-query
-cd ..
+cd web && npm install
+npm run dev   # http://localhost:3000
 ```
 
-### PowerShell
+### Environment variables (`web/.env.local`)
 
-```powershell
-mkdir settla
-cd settla
-git init
-
-# contracts
-mkdir contracts
-cd contracts
-npm init -y
-npm install --save-dev hardhat@2 "@nomicfoundation/hardhat-toolbox@hh2" dotenv
-cd ..
-
-# web
-npx create-next-app@latest web --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm
-cd web
-npm install wagmi viem @tanstack/react-query
-cd ..
+```
+NEXT_PUBLIC_ARC_RPC=https://rpc.testnet.arc.io
+NEXT_PUBLIC_SETTLA_ADDRESS=0x70425dE60f324D888997f4E54d841cde77401386
+NEXT_PUBLIC_SETTLA_V2_ADDRESS=0x581834a3cbaf0730d50c081b879f78efc331c760
+NEXT_PUBLIC_USDC_ADDRESS=0x3600000000000000000000000000000000000000
+NEXT_PUBLIC_ARC_NETWORK=testnet
 ```
 
-## Configure
+### Deploy to Vercel
 
-bash:
+1. Import the repo, set **Root Directory** to `web`.
+2. Add the environment variables above.
+3. Deploy. `NEXT_PUBLIC_*` values are baked in at build time — redeploy after changing them.
 
-```bash
-cp contracts/.env.example contracts/.env
-cp web/.env.example web/.env.local
-```
-
-PowerShell:
-
-```powershell
-Copy-Item contracts\.env.example contracts\.env
-Copy-Item web\.env.example web\.env.local
-```
-
-Fill in `DEPLOYER_PRIVATE_KEY` in `contracts/.env`. After deploying, put the contract address in
-`web/.env.local` as `NEXT_PUBLIC_SETTLA_ADDRESS`.
-
-## Run
-
-```bash
-# contracts
-cd contracts
-npm test                    # compile + run the test suite
-npm run deploy:testnet      # optional dry run on Arc testnet (chain 5042002)
-npm run deploy:mainnet      # also verifies the source on the explorer
-npm run verify:mainnet      # re-run verification on its own if needed
-npm run export-abi          # writes web/src/lib/settla.abi.{json,ts}
-
-# web
-cd ../web
-npm run dev                 # http://localhost:3000
-```
-
-(PowerShell: identical commands, run them on separate lines.)
-
-### Contract verification
-
-`deploy.js` verifies the source on Arc's Blockscout explorer automatically, retrying while the
-explorer indexes the new contract. This works on testnet. The mainnet explorer's API sits behind
-a bot check that can block scripted requests; when that happens the script writes
-`deployments/arcMainnet-standard-input.json` and prints the compiler version, contract name, and
-constructor arguments to paste into the explorer's **Verify & Publish** page (method: Solidity,
-Standard JSON input).
-
-### Deploying the web app (Vercel)
-
-1. Import the repo in Vercel and set the **Root Directory** to `web`.
-2. Add the environment variables from `web/.env.example`, including `NEXT_PUBLIC_SETTLA_ADDRESS`.
-3. Deploy. `NEXT_PUBLIC_*` values are baked in at build time, so redeploy after changing them.
+---
 
 ## Docs
 
-- [IMPLEMENTATION.md](IMPLEMENTATION.md): contract design, code, build order
-- [INTEGRATION.md](INTEGRATION.md): Arc network config, USDC details, integrating Settla into other apps
-
-## Roadmap
-
-Recurring invoices, partial payments, fiat off-ramp links, and a merchant webhook service.
+- [IMPLEMENTATION.md](IMPLEMENTATION.md) — contract design, audit findings, build order, frontend file map
+- [INTEGRATION.md](INTEGRATION.md) — Arc network config, USDC details, SettlaV2 interface, multi-chain bridge notes
 
 ## License
 
