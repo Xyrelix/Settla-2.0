@@ -2,7 +2,7 @@
 
 **Non-custodial USDC invoicing and recurring payments on Arc.**
 
-A merchant creates an invoice or a subscription plan, shares a link or QR code, and the customer pays in USDC — from Arc directly or bridged in from any supported chain. The contract moves money straight from customer to merchant: Settla never holds funds, and because Arc uses USDC for gas, a small business only ever needs one asset.
+A merchant creates an invoice or a subscription plan, shares a link or QR code, and the customer pays in USDC. The contract moves money straight from customer to merchant: Settla never holds funds, and because Arc uses USDC for gas, a small business only ever needs one asset.
 
 > Built for the Arc Microgrants 2 hackathon, extending the original Settla mainnet submission.
 
@@ -33,17 +33,9 @@ Merchants create subscription plans with a fixed USDC amount and billing interva
 - `cancelSubscription(subId)` — merchant or subscriber cancels at any time
 - Supports unlimited or capped charge counts (`maxCharges = 0` means unlimited)
 
-### 2. Multi-chain USDC payments (CCTP bridge)
-
-Customers holding USDC on Base, Arbitrum, Optimism, or Ethereum Sepolia can now pay Arc invoices without bridging first. The pay page shows a **Pay from another chain** panel that uses Circle's Cross-Chain Transfer Protocol (CCTP) to move USDC to Arc in one flow, then automatically pays the invoice on arrival.
-
-### 3. Payment history dashboard
+### 2. Payment history dashboard
 
 A `/history` page shows every invoice a connected wallet has paid, read from on-chain `Settled` events. Each row shows the amount, merchant address, date, memo, and links to the invoice and the Arc explorer transaction.
-
-### 4. Fiat onramp (Circle Onramp Kit)
-
-An expandable **Buy USDC** panel on every pay page prepares customers who do not yet hold USDC to fund their wallet with a card, Apple Pay, Google Pay, or bank transfer. The Circle Onramp Kit integration point is in place and ready to be activated with a Kit Key (currently in private beta).
 
 ---
 
@@ -80,17 +72,12 @@ An expandable **Buy USDC** panel on every pay page prepares customers who do not
 3. Any wallet calls `charge(subId)` after each interval to bill the subscriber.
 4. Either party calls `cancelSubscription(subId)` to end the subscription.
 
-### Multi-chain payments
-1. Customer on Base/Arbitrum/Optimism/Ethereum clicks **Pay from another chain**.
-2. USDC is burned on the source chain via CCTP and minted on Arc.
-3. Invoice is paid automatically on arrival.
-
 ---
 
 ## Security
 
 - Both contracts never hold USDC and have no owner, admin key, or upgrade path.
-- SettlaV2 has been reviewed for reentrancy (CEI pattern applied), ERC-20 return-value safety, and permissionless-charge griefing vectors.
+- SettlaV2 was reviewed for reentrancy (CEI pattern applied), ERC-20 return-value safety, and permissionless-charge griefing vectors.
 - Memos are public and permanent. Never put customer names, emails, or personal data in a memo.
 - A first-time payer signs twice (approve, then pay). Subsequent payments skip approval when the allowance still covers the amount.
 
@@ -128,14 +115,12 @@ settla/
         │   │   └── history/           # payer's payment history
         │   └── (marketing)/           # landing page
         ├── components/
-        │   ├── BridgeAndPay.tsx       # multi-chain USDC bridge (CCTP)
-        │   ├── BuyUsdc.tsx            # fiat onramp (Circle Onramp Kit)
         │   ├── CreatePlanForm.tsx
         │   ├── PlanCard.tsx
         │   └── SubscribeButton.tsx
         └── lib/
             ├── settlaV2.ts            # SettlaV2 ABI, addresses, helpers
-            └── wagmi.ts               # updated: Arc + bridge chains
+            └── wagmi.ts               # wagmi config for Arc
 ```
 
 ---
@@ -172,7 +157,7 @@ NEXT_PUBLIC_ARC_NETWORK=testnet
 ## Docs
 
 - [IMPLEMENTATION.md](IMPLEMENTATION.md) — contract design, audit findings, build order, frontend file map
-- [INTEGRATION.md](INTEGRATION.md) — Arc network config, USDC details, SettlaV2 interface, multi-chain bridge notes
+- [INTEGRATION.md](INTEGRATION.md) — Arc network config, USDC details, SettlaV2 interface
 
 ## License
 

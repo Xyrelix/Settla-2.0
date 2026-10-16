@@ -91,55 +91,6 @@ The subscriber must `approve(settlaV2Address, amount * maxCharges)` (or a large 
 
 ---
 
-## Multi-chain USDC payments (CCTP bridge)
-
-Settla 2.0 accepts USDC from chains other than Arc. The BridgeAndPay component on the pay page uses Circle's Cross-Chain Transfer Protocol (CCTP) via Circle App Kit.
-
-### Supported source chains (testnet)
-
-| Chain | Chain ID |
-| --- | --- |
-| Base Sepolia | 84532 |
-| Arbitrum Sepolia | 421614 |
-| Optimism Sepolia | 11155420 |
-| Ethereum Sepolia | 11155111 |
-
-### Flow
-
-1. Customer selects a source chain in the bridge panel.
-2. App Kit burns USDC on the source chain and monitors Circle's attestation service.
-3. Once the attestation is available (typically under 20 seconds on testnet), USDC is minted on Arc.
-4. The invoice is paid automatically.
-
-### Integrating the bridge into another app
-
-```ts
-import { createBridgeKit } from "@circle-fin/bridge-kit";
-import { viemV2Adapter } from "@circle-fin/adapter-viem-v2";
-
-const bridgeKit = createBridgeKit({ adapter: viemV2Adapter({ walletClient, publicClient }) });
-
-const result = await bridgeKit.bridge({
-  sourceChain: "Base_Sepolia",      // Circle chain key
-  destinationChain: "Arc_Testnet",
-  amount: "10.00",                  // USDC, string decimal
-  destinationAddress: merchantAddress,
-});
-```
-
----
-
-## Fiat onramp (Circle Onramp Kit)
-
-The `BuyUsdc` component on every pay page is the integration point for the Circle Onramp Kit. Once a Kit Key is obtained (the kit is currently in private beta), replace the placeholder with:
-
-1. A server route using `createOnrampServerKit` that mints a session token.
-2. A client call to `createOnrampKit().mountIframe(containerEl)` that renders the widget.
-
-The widget supports debit cards, Apple Pay, Google Pay, and ACH bank transfer.
-
----
-
 ## Integrating Settla into another app
 
 ### Create an invoice (viem)
@@ -147,13 +98,13 @@ The widget supports debit cards, Apple Pay, Google Pay, and ACH bank transfer.
 ```ts
 import { createWalletClient, http, parseUnits } from "viem";
 import { arc } from "./arc";
-import settlaV2Artifact from "../contracts/out/SettlaV2.sol/SettlaV2.json";
+import { SETTLA_V2_ABI, SETTLA_V2_ADDRESS } from "./settlaV2";
 
 const wallet = createWalletClient({ chain: arc, transport: http(), account });
 
 const hash = await wallet.writeContract({
-  address: "0x581834a3cbaf0730d50c081b879f78efc331c760",
-  abi: settlaV2Artifact.abi,
+  address: SETTLA_V2_ADDRESS,
+  abi: SETTLA_V2_ABI,
   functionName: "createInvoice",
   args: [parseUnits("25.00", 6), "Order #1042"],
 });
@@ -165,8 +116,8 @@ const hash = await wallet.writeContract({
 const MONTHLY = 2592000n; // 30 days in seconds
 
 const hash = await wallet.writeContract({
-  address: "0x581834a3cbaf0730d50c081b879f78efc331c760",
-  abi: settlaV2Artifact.abi,
+  address: SETTLA_V2_ADDRESS,
+  abi: SETTLA_V2_ABI,
   functionName: "createPlan",
   args: [
     parseUnits("9.99", 6),  // amount per interval
@@ -186,8 +137,8 @@ import { arcTestnet } from "viem/chains";
 const client = createPublicClient({ chain: arcTestnet, transport: http() });
 
 const plan = await client.readContract({
-  address: "0x581834a3cbaf0730d50c081b879f78efc331c760",
-  abi: settlaV2Artifact.abi,
+  address: SETTLA_V2_ADDRESS,
+  abi: SETTLA_V2_ABI,
   functionName: "getPlan",
   args: [1n],
 });
@@ -232,7 +183,6 @@ Share `https://<your-app>/plans/<planId>` for subscription plans.
 | Amount off by huge factor | Mixed 6-decimal ERC-20 with 18-decimal native gas value |
 | `charge` reverts with `TooEarlyToCharge` | Interval has not elapsed since `lastChargedAt` |
 | `subscribe` reverts with `PlanInactive` | Merchant deactivated the plan |
-| Bridge stalls | Circle CCTP attestation can take up to 20 minutes on testnet under load; wait and retry |
 
 ---
 
@@ -249,9 +199,7 @@ Share `https://<your-app>/plans/<planId>` for subscription plans.
 - [x] Original Settla deployed and working on Arc mainnet
 - [x] At least one real create, pay, and cancel on Arc mainnet with proof of transactions
 - [x] SettlaV2 deployed on Arc testnet with recurring subscription support
-- [x] Multi-chain USDC payments via CCTP bridge
 - [x] Payment history dashboard
-- [x] Fiat onramp integration point (Circle Onramp Kit)
 - [x] Public GitHub repo (`Xyrelix/Settla-2.0`) with README, IMPLEMENTATION.md, INTEGRATION.md
 - [x] Live frontend on Vercel
 - [x] Public builder profile: [@Dayston_](https://x.com/Dayston_)

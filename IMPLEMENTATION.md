@@ -153,7 +153,7 @@ SettlaV2 underwent three rounds of security review before deployment. Four High 
 ## Contract tooling (SettlaV2 — Foundry)
 
 Build: `forge build` from the repo root (reads `foundry.toml`).
-Artifact: `contracts/out/SettlaV2.sol/SettlaV2.json` — the ABI is imported directly into `web/src/lib/settlaV2.ts`.
+The ABI is inlined directly in `web/src/lib/settlaV2.ts` — no build artifact dependency at runtime.
 
 ---
 
@@ -163,12 +163,10 @@ Artifact: `contracts/out/SettlaV2.sol/SettlaV2.json` — the ABI is imported dir
 
 | File | Purpose |
 | --- | --- |
-| `lib/settlaV2.ts` | SettlaV2 address + ABI import, `Plan`/`Subscription` types, `formatUsdc`, `formatInterval`, `errorMessage` |
+| `lib/settlaV2.ts` | SettlaV2 address + inlined ABI, `Plan`/`Subscription` types, `formatUsdc`, `formatInterval`, `errorMessage` |
 | `components/CreatePlanForm.tsx` | Validates amount, interval preset or custom, maxCharges, memo; creates plan on-chain |
 | `components/PlanCard.tsx` | Displays a plan with amount, interval, status badge; links to plan detail |
 | `components/SubscribeButton.tsx` | Approve + subscribe flow; shows next charge date; handles `charge()` |
-| `components/BridgeAndPay.tsx` | Circle App Kit bridge widget; burns USDC on source chain, mints on Arc, pays invoice |
-| `components/BuyUsdc.tsx` | Expandable fiat onramp panel (Circle Onramp Kit integration point) |
 | `app/(app)/plans/page.tsx` | Merchant's subscription plan dashboard |
 | `app/(app)/plans/new/page.tsx` | Create a new plan |
 | `app/(app)/plans/[id]/page.tsx` | Plan detail, QR share, subscribe button |
@@ -179,8 +177,6 @@ Artifact: `contracts/out/SettlaV2.sol/SettlaV2.json` — the ABI is imported dir
 | File | Change |
 | --- | --- |
 | `components/NavLinks.tsx` | Added Subscriptions and History tabs |
-| `lib/wagmi.ts` | Added Base Sepolia, Arbitrum Sepolia, Optimism Sepolia, Ethereum Sepolia for bridge |
-| `app/(app)/pay/[id]/page.tsx` | Added BridgeAndPay and BuyUsdc below the main pay button |
 
 ### Original files (unchanged)
 
@@ -201,4 +197,4 @@ Artifact: `contracts/out/SettlaV2.sol/SettlaV2.json` — the ABI is imported dir
 | Phase | Work |
 | --- | --- |
 | Oct 4–13, 2026 | Original Settla: contract, tests, deployment, frontend, Vercel |
-| Oct 14–16, 2026 | Settla 2.0: SettlaV2 contract (written, audited 3 rounds, deployed Arc testnet), recurring plan UI, multi-chain bridge, payment history, fiat onramp placeholder, docs |
+| Oct 14–16, 2026 | Settla 2.0: SettlaV2 contract (written, audited 3 rounds, deployed Arc testnet), recurring plan UI, payment history, docs |
