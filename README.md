@@ -39,6 +39,14 @@ A `/history` page shows every invoice a connected wallet has paid, read from on-
 
 ---
 
+## Proof of use (Settla 2.0 — Arc testnet)
+
+| Action | Contract | Transaction |
+| --- | --- | --- |
+| Create subscription plan | SettlaV2 (`0x5818…c760`) | [`0xd114aa0e…17f8c4`](https://explorer.testnet.arc.io/tx/0xd114aa0eaf994090a388c9dad9bb4cc1cbfee79e268f76de3d02062f8917f8c4) |
+
+---
+
 ## Proof of use (original Settla — Arc mainnet)
 
 | Action | Invoice | Amount | Transaction |

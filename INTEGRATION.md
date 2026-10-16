@@ -194,11 +194,20 @@ Share `https://<your-app>/plans/<planId>` for subscription plans.
 
 ---
 
+## Proof of use (Settla 2.0 — Arc testnet)
+
+| Action | Contract | Transaction |
+| --- | --- | --- |
+| Create subscription plan | SettlaV2 (`0x5818…c760`) | [`0xd114aa0e…17f8c4`](https://explorer.testnet.arc.io/tx/0xd114aa0eaf994090a388c9dad9bb4cc1cbfee79e268f76de3d02062f8917f8c4) |
+
+---
+
 ## Arc Microgrants 2 submission checklist
 
 - [x] Original Settla deployed and working on Arc mainnet
 - [x] At least one real create, pay, and cancel on Arc mainnet with proof of transactions
 - [x] SettlaV2 deployed on Arc testnet with recurring subscription support
+- [x] At least one real subscription plan created on Arc testnet with proof of transaction
 - [x] Payment history dashboard
 - [x] Public GitHub repo (`Xyrelix/Settla-2.0`) with README, IMPLEMENTATION.md, INTEGRATION.md
 - [x] Live frontend on Vercel
