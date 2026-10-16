@@ -3,36 +3,38 @@
  * BridgeAndPay — lets a customer on Base Sepolia, Arbitrum Sepolia, Optimism Sepolia,
  * or Ethereum Sepolia bridge USDC to Arc Testnet via CCTP (Circle App Kit), then pay
  * an invoice in one flow.
+ *
+ * @circle-fin/adapter-viem-v2 and @circle-fin/app-kit rely on Node built-ins
+ * (crypto, stream) that Next.js cannot statically bundle. We import them lazily
+ * at call-time so the server/build phase never touches those modules.
  */
 import { useState } from "react";
 import { useAccount, useSwitchChain, useChainId } from "wagmi";
-import { createViemAdapterFromProvider } from "@circle-fin/adapter-viem-v2";
-import { AppKit } from "@circle-fin/app-kit";
 import type { EIP1193Provider } from "viem";
 import { formatUsdc } from "@/lib/settlaV2";
 
-// These string values match BridgeChain enum values in @circle-fin/app-kit
 const SOURCE_CHAINS: { label: string; chainId: number; kitChain: string }[] = [
-  { label: "Base Sepolia", chainId: 84532, kitChain: "Base_Sepolia" },
-  { label: "Arbitrum Sepolia", chainId: 421614, kitChain: "Arb_Sepolia" },
-  { label: "Optimism Sepolia", chainId: 11155420, kitChain: "Op_Sepolia" },
-  { label: "Ethereum Sepolia", chainId: 11155111, kitChain: "Eth_Sepolia" },
+  { label: "Base Sepolia",      chainId: 84532,    kitChain: "Base_Sepolia" },
+  { label: "Arbitrum Sepolia",  chainId: 421614,   kitChain: "Arb_Sepolia"  },
+  { label: "Optimism Sepolia",  chainId: 11155420, kitChain: "Op_Sepolia"   },
+  { label: "Ethereum Sepolia",  chainId: 11155111, kitChain: "Eth_Sepolia"  },
 ];
 
-const arcTestnetKitChain = "Arc_Testnet";
-const appKit = new AppKit();
+const ARC_TESTNET_KIT_CHAIN = "Arc_Testnet";
 
-type BridgeStatus = "idle" | "switching" | "approving" | "burning" | "attesting" | "minting" | "done" | "error";
+type BridgeStatus =
+  | "idle" | "switching" | "approving" | "burning"
+  | "attesting" | "minting" | "done" | "error";
 
 const STATUS_LABEL: Record<BridgeStatus, string> = {
-  idle: "Bridge & pay from another chain",
+  idle:      "Bridge & pay from another chain",
   switching: "Switching chain…",
   approving: "Approving USDC (1/4)…",
-  burning: "Burning USDC (2/4)…",
+  burning:   "Burning USDC (2/4)…",
   attesting: "Waiting for Circle attestation (3/4)…",
-  minting: "Minting on Arc (4/4)…",
-  done: "Bridged — pay below",
-  error: "Bridge failed — try again",
+  minting:   "Minting on Arc (4/4)…",
+  done:      "Bridged — pay below",
+  error:     "Bridge failed — try again",
 };
 
 interface Props {
@@ -60,24 +62,30 @@ export function BridgeAndPay({ invoiceAmount, onBridged }: Props) {
         await switchChainAsync({ chainId: selectedSource.chainId });
       }
 
+      // Lazy-load the Node-dependent packages at call-time only (never at build time)
+      const [{ createViemAdapterFromProvider }, { AppKit }] = await Promise.all([
+        import("@circle-fin/adapter-viem-v2"),
+        import("@circle-fin/app-kit"),
+      ]);
+
       const provider = (await connector.getProvider()) as EIP1193Provider;
       const adapter = await createViemAdapterFromProvider({ provider });
+      const appKit = new AppKit();
 
       setStatus("approving");
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = await (appKit as any).bridge({
         from: { adapter, chain: selectedSource.kitChain },
-        to: { adapter, chain: arcTestnetKitChain },
+        to:   { adapter, chain: ARC_TESTNET_KIT_CHAIN },
         amount: bridgeAmount,
       });
 
-      // Reflect which step completed
       if (result.steps) {
         for (const step of result.steps) {
-          if (step.name === "burn") setStatus("burning");
+          if (step.name === "burn")             setStatus("burning");
           if (step.name === "fetchAttestation") setStatus("attesting");
-          if (step.name === "mint") setStatus("minting");
+          if (step.name === "mint")             setStatus("minting");
         }
       }
 
@@ -166,9 +174,9 @@ export function BridgeAndPay({ invoiceAmount, onBridged }: Props) {
                 width:
                   status === "switching" ? "15%" :
                   status === "approving" ? "30%" :
-                  status === "burning" ? "55%" :
+                  status === "burning"   ? "55%" :
                   status === "attesting" ? "75%" :
-                  status === "minting" ? "92%" : "100%",
+                  status === "minting"   ? "92%" : "100%",
               }}
             />
           </div>
@@ -200,7 +208,12 @@ export function BridgeAndPay({ invoiceAmount, onBridged }: Props) {
 
       <p className="text-center text-xs text-muted">
         Powered by{" "}
-        <a href="https://developers.circle.com/cctp" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-ink">
+        <a
+          href="https://developers.circle.com/cctp"
+          target="_blank"
+          rel="noreferrer"
+          className="underline underline-offset-2 hover:text-ink"
+        >
           Circle CCTP
         </a>
         . Testnet only.
