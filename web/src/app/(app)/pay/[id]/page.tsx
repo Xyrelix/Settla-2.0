@@ -7,6 +7,8 @@ import { useAccount, useReadContract } from "wagmi";
 import { arc } from "@/lib/arc";
 import { formatUsdc, settlaAbi, SETTLA_ADDRESS, Status } from "@/lib/settla";
 import { PayButton } from "@/components/PayButton";
+import { BridgeAndPay } from "@/components/BridgeAndPay";
+import { BuyUsdc } from "@/components/BuyUsdc";
 import { StatusBadge } from "@/components/InvoiceCard";
 import { Check, Copy } from "@/components/Icons";
 
@@ -112,7 +114,11 @@ export default function PayPage() {
             </dl>
 
             {inv.status === Status.Open && !isMerchant && (
-              <PayButton id={id} amount={inv.amount} onPaid={() => refetch()} />
+              <div className="space-y-3">
+                <PayButton id={id} amount={inv.amount} onPaid={() => refetch()} />
+                <BridgeAndPay invoiceAmount={inv.amount} onBridged={() => refetch()} />
+                <BuyUsdc invoiceAmount={inv.amount} />
+              </div>
             )}
             {inv.status === Status.Open && isMerchant && (
               <p className="text-sm text-muted">Waiting for your customer to pay.</p>

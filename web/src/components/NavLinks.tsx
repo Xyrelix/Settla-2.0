@@ -3,12 +3,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const LINKS = [
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard", label: "Invoices" },
+  { href: "/plans", label: "Subscriptions" },
+  { href: "/history", label: "History" },
 ];
 
 // Pages that show their own title in the nav instead of the links.
 const TITLES: Record<string, string> = {
   "/new": "Create an invoice",
+  "/plans/new": "New subscription plan",
 };
 
 export function NavLinks() {
