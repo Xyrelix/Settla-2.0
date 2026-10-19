@@ -7,7 +7,6 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { SpotlightGrid } from "@/components/Spotlight";
 import { CardDeck } from "@/components/CardDeck";
 import { FlipCard } from "@/components/FlipCard";
-import { SliderCard } from "@/components/SliderCard";
 import { MorphItem } from "@/components/MorphItem";
 
 
@@ -147,8 +146,8 @@ export default function Landing() {
         </div>
         <SpotlightGrid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 
-          {/* Card 1 — Direct transfer (wide) — slide to reveal 2.0 */}
-          <SliderCard
+          {/* Card 1 — Direct transfer (wide) */}
+          <FlipCard
             className="reveal sm:col-span-2"
             front={
               <>
@@ -171,8 +170,8 @@ export default function Landing() {
               <>
                 <div aria-hidden className="flex items-center gap-3 rounded-2xl p-4 text-sm" style={{ background: "color-mix(in srgb, var(--sub) 12%, transparent)" }}>
                   <span className="rounded-full px-3 py-1.5 font-mono shadow-[0_0_0_1px_var(--hairline)]" style={{ background: "var(--sub-soft)", color: "var(--sub)" }}>Subscriber</span>
-                  <span className="relative h-0.5 flex-1 rounded-full" style={{ background: "var(--sub)" }}>
-                    <span className="absolute -top-3 left-0 grid size-6 place-items-center rounded-full text-[0.625rem] font-bold text-white" style={{ background: "var(--sub)" }}>↻</span>
+                  <span className="relative h-0.5 flex-1 rounded-full [container-type:inline-size]" style={{ background: "color-mix(in srgb, var(--sub) 30%, transparent)" }}>
+                    <span className="coin absolute -top-3 left-0 grid size-6 place-items-center rounded-full text-[0.625rem] font-bold text-white" style={{ background: "var(--sub)" }}>↻</span>
                   </span>
                   <span className="rounded-full px-3 py-1.5 font-mono font-semibold" style={{ background: "var(--sub)", color: "#fff" }}>You</span>
                 </div>
