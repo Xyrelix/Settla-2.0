@@ -489,3 +489,20 @@
     }
   }
 }
+
+/* ── FLIP CARD ── */
+.flip-root {
+  position: relative;
+  cursor: default;
+}
+.flip-root:focus-visible {
+  outline: 2px solid var(--sub);
+  outline-offset: 3px;
+  border-radius: 1.25rem;
+}
+.flip-face {
+  border-radius: inherit;
+}
+.flip-front {
+  position: relative;
+}

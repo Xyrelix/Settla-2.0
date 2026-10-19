@@ -6,6 +6,7 @@ import { Magnetic } from "@/components/Magnetic";
 import { HowItWorks } from "@/components/HowItWorks";
 import { SpotlightGrid } from "@/components/Spotlight";
 import { CardDeck } from "@/components/CardDeck";
+import { FlipCard } from "@/components/FlipCard";
 
 
 const GOOD_TO_KNOW = [
@@ -140,95 +141,178 @@ export default function Landing() {
           <h2 id="why" className="max-w-xl font-display text-4xl font-semibold tracking-tight">
             What you get
           </h2>
+          <p className="text-sm text-muted">Hover any card to see what&apos;s new in 2.0.</p>
         </div>
         <SpotlightGrid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <article className="card spotlight reveal flex flex-col gap-6 p-7 sm:col-span-2">
-            <div aria-hidden className="flex items-center gap-3 rounded-2xl bg-paper p-4 text-sm">
-              <span className="rounded-full bg-card px-3 py-1.5 font-mono shadow-[0_0_0_1px_var(--hairline)]">Customer</span>
-              <span className="relative h-0.5 flex-1 rounded-full bg-line [container-type:inline-size]">
-                <span className="coin absolute -top-3 left-0 grid size-6 place-items-center rounded-full bg-accent text-[0.625rem] font-bold text-accent-ink">
-                  $
-                </span>
-              </span>
-              <span className="rounded-full bg-accent-soft px-3 py-1.5 font-mono text-accent-hover">You</span>
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-display text-2xl font-semibold tracking-tight">It goes straight to you</h3>
-              <p className="max-w-lg leading-relaxed text-muted">
-                Payments move from your customer&apos;s wallet to yours in one transaction. Settla never touches the
-                money, so there&apos;s nothing to withdraw and no one to wait on.
-              </p>
-            </div>
-          </article>
 
-          <article className="card spotlight reveal flex flex-col justify-between gap-6 p-7 lg:row-span-2">
-            <div aria-hidden className="space-y-1">
-              <p className="amount text-7xl font-semibold leading-none text-accent">&lt;1s</p>
-              <p className="text-sm font-medium text-muted">from payment to final on Arc</p>
-            </div>
-            <ol aria-hidden className="relative space-y-4 border-l-2 border-dashed border-line pl-5 text-sm [view-timeline-name:--finality]">
-              {["Customer signs the payment", "Arc commits the block", "Invoice shows Paid"].map((step, i) => (
-                <li key={step} className="relative">
-                  <span
-                    className="finality-dot absolute -left-[1.6875rem] top-1 size-3 rounded-full ring-4 ring-card"
-                    style={
-                      {
-                        "--dot": i === 2 ? "var(--paid)" : "var(--accent)",
-                        animationRange: `cover ${18 + 9 * i}% cover ${23 + 9 * i}%`,
-                      } as React.CSSProperties
-                    }
-                  />
-                  <span className={i === 2 ? "font-semibold text-paid" : "text-ink"}>{step}</span>
-                </li>
-              ))}
-            </ol>
-            <div className="space-y-1.5">
-              <h3 className="font-display text-2xl font-semibold tracking-tight">Paid in about a second</h3>
-              <p className="leading-relaxed text-muted">
-                Arc confirms a payment the moment it happens, so nothing sits in "pending" for days and there is no
-                transfer to chase.
-              </p>
-            </div>
-          </article>
+          {/* Card 1 — Direct transfer (wide) */}
+          <FlipCard
+            className="reveal sm:col-span-2"
+            front={
+              <>
+                <div aria-hidden className="flex items-center gap-3 rounded-2xl bg-paper p-4 text-sm">
+                  <span className="rounded-full bg-card px-3 py-1.5 font-mono shadow-[0_0_0_1px_var(--hairline)]">Customer</span>
+                  <span className="relative h-0.5 flex-1 rounded-full bg-line [container-type:inline-size]">
+                    <span className="coin absolute -top-3 left-0 grid size-6 place-items-center rounded-full bg-accent text-[0.625rem] font-bold text-accent-ink">$</span>
+                  </span>
+                  <span className="rounded-full bg-accent-soft px-3 py-1.5 font-mono text-accent-hover">You</span>
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="font-display text-2xl font-semibold tracking-tight">It goes straight to you</h3>
+                  <p className="max-w-lg leading-relaxed text-muted">
+                    Payments move from your customer&apos;s wallet to yours in one transaction. Settla never touches the money.
+                  </p>
+                </div>
+              </>
+            }
+            back={
+              <>
+                <div aria-hidden className="flex items-center gap-3 rounded-2xl p-4 text-sm" style={{ background: "color-mix(in srgb, var(--sub) 12%, transparent)" }}>
+                  <span className="rounded-full px-3 py-1.5 font-mono shadow-[0_0_0_1px_var(--hairline)]" style={{ background: "var(--sub-soft)", color: "var(--sub)" }}>Subscriber</span>
+                  <span className="relative h-0.5 flex-1 rounded-full" style={{ background: "var(--sub)" }}>
+                    <span className="absolute -top-3 left-0 grid size-6 place-items-center rounded-full text-[0.625rem] font-bold text-white" style={{ background: "var(--sub)" }}>↻</span>
+                  </span>
+                  <span className="rounded-full px-3 py-1.5 font-mono font-semibold" style={{ background: "var(--sub)", color: "#fff" }}>You</span>
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="font-display text-2xl font-semibold tracking-tight" style={{ color: "var(--sub)" }}>Every interval, automatically</h3>
+                  <p className="max-w-lg leading-relaxed text-muted">
+                    Subscription charges move directly from subscriber to merchant on every cycle — no intermediary, no manual chasing.
+                  </p>
+                </div>
+              </>
+            }
+          />
 
-          <article className="card spotlight reveal flex flex-col gap-6 p-7">
-            <dl aria-hidden className="amount space-y-2 rounded-2xl bg-paper p-4 text-sm">
-              <div className="flex justify-between">
-                <dt className="font-sans text-muted">Invoice</dt>
-                <dd className="font-semibold">
-                  <CountUp value={18.5} decimals={2} /> USDC
-                </dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="font-sans text-muted">Network fee</dt>
-                <dd>
-                  <CountUp value={0.002} decimals={3} /> USDC
-                </dd>
-              </div>
-            </dl>
-            <div className="space-y-1.5">
-              <h3 className="font-display text-xl font-semibold tracking-tight">One currency for everything</h3>
-              <p className="leading-relaxed text-muted">
-                Even the network fee is paid in USDC, a dollar stablecoin. You never buy a second coin to get paid.
-              </p>
-            </div>
-          </article>
+          {/* Card 2 — Finality (tall) */}
+          <FlipCard
+            className="reveal lg:row-span-2"
+            front={
+              <>
+                <div aria-hidden className="space-y-1">
+                  <p className="amount text-7xl font-semibold leading-none text-accent">&lt;1s</p>
+                  <p className="text-sm font-medium text-muted">from payment to final on Arc</p>
+                </div>
+                <ol aria-hidden className="relative space-y-4 border-l-2 border-dashed border-line pl-5 text-sm">
+                  {["Customer signs the payment", "Arc commits the block", "Invoice shows Paid"].map((step, i) => (
+                    <li key={step} className="relative">
+                      <span className="finality-dot absolute -left-[1.6875rem] top-1 size-3 rounded-full ring-4 ring-card"
+                        style={{ "--dot": i === 2 ? "var(--paid)" : "var(--accent)", animationRange: `cover ${18 + 9 * i}% cover ${23 + 9 * i}%` } as React.CSSProperties}
+                      />
+                      <span className={i === 2 ? "font-semibold text-paid" : "text-ink"}>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+                <div className="space-y-1.5">
+                  <h3 className="font-display text-2xl font-semibold tracking-tight">Paid in about a second</h3>
+                  <p className="leading-relaxed text-muted">Arc confirms the moment it happens — no pending state, no transfers to chase.</p>
+                </div>
+              </>
+            }
+            back={
+              <>
+                <div aria-hidden className="space-y-1">
+                  <p className="amount text-7xl font-semibold leading-none" style={{ color: "var(--sub)" }}>&lt;1s</p>
+                  <p className="text-sm font-medium text-muted">per subscription charge on Arc</p>
+                </div>
+                <ol aria-hidden className="relative space-y-4 border-l-2 border-dashed pl-5 text-sm" style={{ borderColor: "var(--sub)" }}>
+                  {["Charge triggered on interval", "Arc commits the block", "Subscriber billed, you receive"].map((step, i) => (
+                    <li key={step} className="relative">
+                      <span className="absolute -left-[1.6875rem] top-1 size-3 rounded-full ring-4 ring-card"
+                        style={{ background: "var(--sub)" }}
+                      />
+                      <span className={i === 2 ? "font-semibold" : "text-ink"} style={i === 2 ? { color: "var(--sub)" } : {}}>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+                <div className="space-y-1.5">
+                  <h3 className="font-display text-2xl font-semibold tracking-tight" style={{ color: "var(--sub)" }}>Recurring charges, same speed</h3>
+                  <p className="leading-relaxed text-muted">Every subscription charge settles in under a second — same Arc finality, every billing cycle.</p>
+                </div>
+              </>
+            }
+          />
 
-          <article className="card spotlight reveal flex flex-col gap-6 p-7">
-            <div aria-hidden className="flex items-center justify-between gap-3 rounded-2xl bg-paper p-4">
-              <span className="btn-primary pointer-events-none px-4 py-2 text-sm">Connect wallet</span>
-              <span className="text-right text-sm leading-tight text-muted">
-                <span className="amount block whitespace-nowrap font-semibold text-ink">~0.004 USDC</span>
-                per invoice
-              </span>
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-display text-xl font-semibold tracking-tight">No sign-up, no monthly fee</h3>
-              <p className="leading-relaxed text-muted">
-                Connect a wallet and send your first invoice. You only pay a fraction of a cent in network fees.
-              </p>
-            </div>
-          </article>
+          {/* Card 3 — One currency */}
+          <FlipCard
+            className="reveal"
+            front={
+              <>
+                <dl aria-hidden className="amount space-y-2 rounded-2xl bg-paper p-4 text-sm">
+                  <div className="flex justify-between">
+                    <dt className="font-sans text-muted">Invoice</dt>
+                    <dd className="font-semibold"><CountUp value={18.5} decimals={2} /> USDC</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="font-sans text-muted">Network fee</dt>
+                    <dd><CountUp value={0.002} decimals={3} /> USDC</dd>
+                  </div>
+                </dl>
+                <div className="space-y-1.5">
+                  <h3 className="font-display text-xl font-semibold tracking-tight">One currency for everything</h3>
+                  <p className="leading-relaxed text-muted">Even the network fee is paid in USDC. You never buy a second coin to get paid.</p>
+                </div>
+              </>
+            }
+            back={
+              <>
+                <dl aria-hidden className="amount space-y-2 rounded-2xl p-4 text-sm" style={{ background: "color-mix(in srgb, var(--sub) 10%, transparent)" }}>
+                  <div className="flex justify-between">
+                    <dt className="font-sans text-muted">Plan</dt>
+                    <dd className="font-semibold" style={{ color: "var(--sub)" }}>9.99 USDC / mo</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="font-sans text-muted">Charge fee</dt>
+                    <dd><CountUp value={0.002} decimals={3} /> USDC</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="font-sans text-muted">Charges so far</dt>
+                    <dd className="font-semibold" style={{ color: "var(--sub)" }}>3 of ∞</dd>
+                  </div>
+                </dl>
+                <div className="space-y-1.5">
+                  <h3 className="font-display text-xl font-semibold tracking-tight" style={{ color: "var(--sub)" }}>Subscriptions in the same currency</h3>
+                  <p className="leading-relaxed text-muted">Plans charge in USDC too. Same wallet, same token — invoices and subscriptions side by side.</p>
+                </div>
+              </>
+            }
+          />
+
+          {/* Card 4 — No sign-up */}
+          <FlipCard
+            className="reveal"
+            front={
+              <>
+                <div aria-hidden className="flex items-center justify-between gap-3 rounded-2xl bg-paper p-4">
+                  <span className="btn-primary pointer-events-none px-4 py-2 text-sm">Connect wallet</span>
+                  <span className="text-right text-sm leading-tight text-muted">
+                    <span className="amount block whitespace-nowrap font-semibold text-ink">~0.004 USDC</span>
+                    per invoice
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="font-display text-xl font-semibold tracking-tight">No sign-up, no monthly fee</h3>
+                  <p className="leading-relaxed text-muted">Connect a wallet and send your first invoice. You only pay a fraction of a cent in network fees.</p>
+                </div>
+              </>
+            }
+            back={
+              <>
+                <div aria-hidden className="flex items-center justify-between gap-3 rounded-2xl p-4" style={{ background: "color-mix(in srgb, var(--sub) 10%, transparent)" }}>
+                  <span className="pointer-events-none rounded-full px-4 py-2 text-sm font-semibold text-white" style={{ background: "var(--sub)" }}>Approve once</span>
+                  <span className="text-right text-sm leading-tight text-muted">
+                    <span className="amount block whitespace-nowrap font-semibold" style={{ color: "var(--sub)" }}>↻ forever</span>
+                    auto-billed
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="font-display text-xl font-semibold tracking-tight" style={{ color: "var(--sub)" }}>One approval, recurring forever</h3>
+                  <p className="leading-relaxed text-muted">Subscribers approve USDC spending once. Every billing cycle after that is automatic — no repeat confirmations.</p>
+                </div>
+              </>
+            }
+          />
+
         </SpotlightGrid>
       </section>
 
