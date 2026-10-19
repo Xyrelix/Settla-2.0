@@ -20,17 +20,38 @@ const GOOD_TO_KNOW = [
   ["It's unaudited.", "Settla is a proof of concept and hasn't had a security audit. Start with small amounts."],
 ];
 
+const V2_FEATURES = [
+  {
+    title: "Recurring subscription plans",
+    body: "Create a plan with an amount and interval. Customers subscribe once — charges happen automatically every interval, straight to your wallet.",
+    icon: (
+      <svg className="size-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M3 10a7 7 0 0 1 12.7-4M17 10a7 7 0 0 1-12.7 4" />
+        <path d="M15 6h2.7V3.3M5 14H2.3V16.7" />
+      </svg>
+    ),
+  },
+  {
+    title: "Payment history",
+    body: "Every invoice you've paid shows up in a timeline, pulled live from the Arc blockchain. Amount, merchant, date, and a link to the transaction.",
+    icon: (
+      <svg className="size-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="10" cy="10" r="7.5" />
+        <path d="M10 6v4l2.5 2.5" />
+      </svg>
+    ),
+  },
+];
+
 function ReceiptPreview() {
   return (
     <div aria-hidden className="rise relative mx-auto w-full max-w-sm select-none py-6 [animation-delay:350ms]">
       <GlobeBackdrop className="pointer-events-none absolute left-[68%] top-[30%] -z-10 size-[min(34rem,120vw)] -translate-x-1/2 -translate-y-1/2 text-accent opacity-60" />
-      {/* A second receipt peeking out behind, for depth. */}
       <div className="card absolute inset-x-6 top-0 h-full translate-y-3 opacity-70 md:translate-y-0 md:-rotate-3" />
       <div className="card relative overflow-hidden md:rotate-1">
         <div className="space-y-5 p-7">
           <div className="flex items-center justify-between">
             <span className="amount text-sm text-muted">Invoice #1042</span>
-            {/* Plays once after load: Open, paying, Paid. Ends (and stays) on Paid. */}
             <span className="grid justify-items-end">
               <span className="receipt-leave col-start-1 row-start-1">
                 <StatusBadge status={Status.Open} />
@@ -75,28 +96,38 @@ function ReceiptPreview() {
 export default function Landing() {
   return (
     <div className="space-y-24 sm:space-y-32">
+
+      {/* ── HERO ── */}
       <section className="relative isolate grid items-center gap-12 lg:grid-cols-[1fr_24rem] lg:gap-16">
-        {/* Warm glow behind the hero: settles in on load, then drifts only with scroll. */}
         <div aria-hidden className="pointer-events-none absolute -top-48 left-1/2 -z-20 h-[50rem] w-screen -translate-x-1/2">
           <span className="glow glow-a" />
           <span className="glow glow-b" />
         </div>
         <div className="space-y-7">
-          <p className="eyebrow rise">For small shops &amp; freelancers</p>
-          <h1 className="rise max-w-2xl font-display [animation-delay:80ms] text-5xl font-semibold leading-[1.04] tracking-tight sm:text-7xl">
-            Get paid in dollars, the moment your customer pays.
+          <p className="eyebrow rise">Invoices &amp; recurring payments on Arc</p>
+          <h1 className="rise max-w-2xl font-display text-5xl font-semibold leading-[1.04] tracking-tight [animation-delay:80ms] sm:text-7xl">
+            Get paid in dollars, on time, every time.
           </h1>
           <p className="rise max-w-[34rem] text-lg leading-relaxed text-muted [animation-delay:160ms]">
-            Settla turns an amount and a note into a link your customer can pay in USDC. The money goes straight
-            to your wallet, with no card fees and nobody holding it in between.
+            Settla turns an amount and a note into a payment link — or a subscription plan that charges
+            automatically. The money goes straight to your wallet in USDC, with no card fees and nobody
+            holding it in between.
           </p>
-          <div className="rise flex flex-wrap items-center gap-x-6 gap-y-4 [animation-delay:240ms]">
+          <div className="rise flex flex-wrap items-center gap-4 [animation-delay:240ms]">
             <Magnetic>
               <CtaLink href="/new" large>
                 Create an invoice
               </CtaLink>
             </Magnetic>
-            <Link href="/pay/1" className="font-medium text-ink underline decoration-line decoration-2 underline-offset-[6px] transition hover:decoration-accent">
+            <Magnetic>
+              <CtaLink href="/plans/new" large>
+                Create a plan
+              </CtaLink>
+            </Magnetic>
+            <Link
+              href="/pay/1"
+              className="font-medium text-ink underline decoration-line decoration-2 underline-offset-[6px] transition hover:decoration-accent"
+            >
               See a paid invoice
             </Link>
           </div>
@@ -104,6 +135,56 @@ export default function Landing() {
         <ReceiptPreview />
       </section>
 
+      {/* ── WHAT'S NEW IN 2.0 ── */}
+      <section aria-labelledby="v2" className="relative overflow-hidden rounded-[2rem] p-8 sm:p-12"
+        style={{ background: "var(--sub-soft)" }}>
+        {/* Subtle indigo glow */}
+        <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full opacity-30"
+          style={{ background: "radial-gradient(closest-side, var(--sub), transparent)" }} />
+        <div className="relative space-y-8">
+          <div className="space-y-2">
+            <p className="inline-flex w-fit items-center rounded-full px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.18em]"
+              style={{ background: "var(--sub)", color: "#fff" }}>
+              New in 2.0
+            </p>
+            <h2 id="v2" className="font-display text-4xl font-semibold tracking-tight" style={{ color: "var(--sub)" }}>
+              Beyond one-off invoices.
+            </h2>
+            <p className="max-w-xl text-lg leading-relaxed" style={{ color: "var(--sub)" , opacity: 0.75 }}>
+              Settla 2.0 adds recurring billing and payment history — both powered by a new audited
+              smart contract on Arc Testnet.
+            </p>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            {V2_FEATURES.map(({ title, body, icon }) => (
+              <article key={title} className="card flex flex-col gap-5 p-7">
+                <div className="grid size-10 place-items-center rounded-xl"
+                  style={{ background: "var(--sub-soft)", color: "var(--sub)" }}>
+                  {icon}
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="font-display text-xl font-semibold tracking-tight">{title}</h3>
+                  <p className="leading-relaxed text-muted">{body}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-4">
+            <Link href="/plans/new"
+              className="btn-primary shimmer">
+              Create a subscription plan
+            </Link>
+            <Link href="/history"
+              className="btn-quiet">
+              View payment history
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ── */}
       <section aria-labelledby="how" className="grid gap-10 lg:grid-cols-[20rem_1fr] lg:gap-16">
         <div className="reveal space-y-3">
           <p className="eyebrow">How it works</p>
@@ -115,7 +196,6 @@ export default function Landing() {
         <ol className="space-y-8">
           {STEPS.map(([title, body], i) => (
             <li key={title} className="reveal relative flex gap-5">
-              {/* Connector to the next step; fills as this step scrolls past. */}
               {i < STEPS.length - 1 && (
                 <span aria-hidden className="absolute -bottom-8 left-6 top-12 w-0.5 -translate-x-1/2 overflow-hidden bg-line">
                   <span className="step-fill block size-full bg-accent" />
@@ -133,6 +213,7 @@ export default function Landing() {
         </ol>
       </section>
 
+      {/* ── WHY SETTLA ── */}
       <section aria-labelledby="why" className="space-y-10">
         <div className="reveal space-y-3">
           <p className="eyebrow">Why Settla</p>
@@ -184,7 +265,7 @@ export default function Landing() {
             <div className="space-y-1.5">
               <h3 className="font-display text-2xl font-semibold tracking-tight">Paid in about a second</h3>
               <p className="leading-relaxed text-muted">
-                Arc confirms a payment the moment it happens, so nothing sits in “pending” for days and there is no
+                Arc confirms a payment the moment it happens, so nothing sits in "pending" for days and there is no
                 transfer to chase.
               </p>
             </div>
@@ -231,6 +312,7 @@ export default function Landing() {
         </SpotlightGrid>
       </section>
 
+      {/* ── GOOD TO KNOW ── */}
       <section aria-labelledby="know" className="card reveal grid gap-8 p-8 sm:p-10 lg:grid-cols-[16rem_1fr] lg:gap-12">
         <h2 id="know" className="font-display text-3xl font-semibold tracking-tight">
           Good to know
@@ -245,19 +327,35 @@ export default function Landing() {
         </dl>
       </section>
 
-      <section className="reveal flex flex-col items-start gap-6 rounded-[2rem] bg-accent-soft px-8 py-12 sm:flex-row sm:items-center sm:justify-between sm:px-12">
-        <div className="space-y-2">
-          <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">Send your first invoice today.</h2>
-          <p className="text-muted">It takes about a minute. All you need is a wallet with a little USDC.</p>
-        </div>
-        <div className="shrink-0">
+      {/* ── FINAL CTA ── */}
+      <section className="reveal grid gap-5 sm:grid-cols-2">
+        <div className="flex flex-col items-start gap-6 rounded-[2rem] bg-accent-soft px-8 py-12 sm:px-10">
+          <div className="space-y-2">
+            <h2 className="font-display text-2xl font-semibold tracking-tight">Send your first invoice.</h2>
+            <p className="text-muted">Takes about a minute. All you need is a wallet with a little USDC.</p>
+          </div>
           <Magnetic>
             <CtaLink href="/new" large shimmer>
               Create an invoice
             </CtaLink>
           </Magnetic>
         </div>
+        <div className="flex flex-col items-start gap-6 rounded-[2rem] px-8 py-12 sm:px-10"
+          style={{ background: "var(--sub-soft)" }}>
+          <div className="space-y-2">
+            <h2 className="font-display text-2xl font-semibold tracking-tight" style={{ color: "var(--sub)" }}>
+              Set up recurring billing.
+            </h2>
+            <p className="text-muted">Create a plan, share the link. Customers subscribe once and are charged automatically.</p>
+          </div>
+          <Link href="/plans/new"
+            className="btn inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-semibold text-white transition duration-300"
+            style={{ background: "var(--sub)" }}>
+            Create a plan
+          </Link>
+        </div>
       </section>
+
     </div>
   );
 }
