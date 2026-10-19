@@ -210,5 +210,5 @@ Share `https://<your-app>/plans/<planId>` for subscription plans.
 - [x] At least one real subscription plan created on Arc testnet with proof of transaction
 - [x] Payment history dashboard
 - [x] Public GitHub repo (`Xyrelix/Settla-2.0`) with README, IMPLEMENTATION.md, INTEGRATION.md
-- [x] Live frontend on Vercel
+- [x] Live frontend on Vercel — [settla-two.vercel.app](https://settla-two.vercel.app)
 - [x] Public builder profile: [@Dayston_](https://x.com/Dayston_)

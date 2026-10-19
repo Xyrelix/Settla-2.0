@@ -13,6 +13,7 @@ A merchant creates an invoice or a subscription plan, shares a link or QR code, 
 | | |
 | --- | --- |
 | App (mainnet) | [settla-seven.vercel.app](https://settla-seven.vercel.app) |
+| App 2.0 (testnet) | [settla-two.vercel.app](https://settla-two.vercel.app) |
 | Settla contract (Arc mainnet, verified) | [`0x70425dE60f324D888997f4E54d841cde77401386`](https://explorer.arc.io/address/0x70425dE60f324D888997f4E54d841cde77401386#code) |
 | SettlaV2 contract (Arc testnet, verified) | [`0x581834a3cbaf0730d50c081b879f78efc331c760`](https://explorer.testnet.arc.io/address/0x581834a3cbaf0730d50c081b879f78efc331c760#code) |
 | Demo video | [59 s: create, scan, pay, settled](https://youtu.be/tiOl89qWRk4) ([also on X](https://x.com/Dayston_/status/2110045154413310349)) |
