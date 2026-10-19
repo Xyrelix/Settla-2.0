@@ -3,14 +3,10 @@ import Link from "next/link";
 import { CtaLink } from "@/components/CtaLink";
 import { CountUp } from "@/components/CountUp";
 import { Magnetic } from "@/components/Magnetic";
+import { HowItWorks } from "@/components/HowItWorks";
 import { SpotlightGrid } from "@/components/Spotlight";
 import { CardDeck } from "@/components/CardDeck";
 
-const STEPS = [
-  ["Write the invoice", "Type the amount and what it's for. One tap in your wallet puts it on Arc."],
-  ["Share the link", "Send it on WhatsApp or email, or let your customer scan the code at the counter."],
-  ["Get paid", "They pay in USDC and the money lands in your wallet about a second later."],
-];
 
 const GOOD_TO_KNOW = [
   ["Notes are public.", "Invoices live on a public blockchain, so keep names and phone numbers out of the note."],
@@ -135,33 +131,7 @@ export default function Landing() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section aria-labelledby="how" className="grid gap-10 lg:grid-cols-[20rem_1fr] lg:gap-16">
-        <div className="reveal space-y-3">
-          <p className="eyebrow">How it works</p>
-          <h2 id="how" className="font-display text-4xl font-semibold tracking-tight">
-            From invoice to payment in three steps
-          </h2>
-          <p className="text-muted">If you can send a text message, you can send an invoice.</p>
-        </div>
-        <ol className="space-y-8">
-          {STEPS.map(([title, body], i) => (
-            <li key={title} className="reveal relative flex gap-5">
-              {i < STEPS.length - 1 && (
-                <span aria-hidden className="absolute -bottom-8 left-6 top-12 w-0.5 -translate-x-1/2 overflow-hidden bg-line">
-                  <span className="step-fill block size-full bg-accent" />
-                </span>
-              )}
-              <span className="step-num amount relative z-10 grid size-12 shrink-0 place-items-center rounded-2xl bg-accent-soft text-xl font-semibold text-accent">
-                {i + 1}
-              </span>
-              <div className="space-y-1 pt-1.5">
-                <h3 className="text-lg font-semibold">{title}</h3>
-                <p className="max-w-lg text-muted">{body}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <HowItWorks />
 
       {/* ── WHY SETTLA ── */}
       <section aria-labelledby="why" className="space-y-10">
