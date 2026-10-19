@@ -7,6 +7,8 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { SpotlightGrid } from "@/components/Spotlight";
 import { CardDeck } from "@/components/CardDeck";
 import { FlipCard } from "@/components/FlipCard";
+import { SliderCard } from "@/components/SliderCard";
+import { MorphItem } from "@/components/MorphItem";
 
 
 const GOOD_TO_KNOW = [
@@ -145,8 +147,8 @@ export default function Landing() {
         </div>
         <SpotlightGrid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 
-          {/* Card 1 — Direct transfer (wide) */}
-          <FlipCard
+          {/* Card 1 — Direct transfer (wide) — slide to reveal 2.0 */}
+          <SliderCard
             className="reveal sm:col-span-2"
             front={
               <>
@@ -318,9 +320,12 @@ export default function Landing() {
 
       {/* ── GOOD TO KNOW ── */}
       <section aria-labelledby="know" className="card reveal grid gap-8 p-8 sm:p-10 lg:grid-cols-[16rem_1fr] lg:gap-12">
-        <h2 id="know" className="font-display text-3xl font-semibold tracking-tight">
-          Good to know
-        </h2>
+        <div className="space-y-2">
+          <h2 id="know" className="font-display text-3xl font-semibold tracking-tight">
+            Good to know
+          </h2>
+          <p className="text-xs text-muted">Hover the last item for a 2.0 note.</p>
+        </div>
         <dl className="grid gap-x-10 gap-y-6 sm:grid-cols-2">
           {GOOD_TO_KNOW.map(([title, body], i) => (
             <div key={title} className="reveal" style={{ animationRange: `entry ${10 + 12 * i}% cover ${30 + 8 * i}%` }}>
@@ -328,6 +333,13 @@ export default function Landing() {
               <dd className="mt-1 text-muted">{body}</dd>
             </div>
           ))}
+          {/* 2.0 morph item */}
+          <MorphItem
+            v1Title="It's unaudited."
+            v1Body="Settla v1 is a proof of concept and hasn't had a security audit. Start with small amounts."
+            v2Title="SettlaV2 is audited."
+            v2Body="The recurring payments contract passed a balanced security review — 4 High findings found and fixed before deployment."
+          />
         </dl>
       </section>
 

@@ -7,11 +7,11 @@ const body = Figtree({ subsets: ["latin"], variable: "--font-body" });
 const serif = Fraunces({ subsets: ["latin"], variable: "--font-serif" });
 
 export const metadata: Metadata = {
-  title: { default: "Settla: Get paid in USDC", template: "%s · Settla" },
-  description: "Invoices for small businesses, paid in USDC straight to your wallet on Arc. Settla never holds your money.",
+  title: { default: "Settla 2.0: Invoices & Recurring Payments in USDC", template: "%s · Settla 2.0" },
+  description: "Create one-off invoices or recurring subscription plans — paid in USDC straight to your wallet on Arc. Non-custodial, sub-second finality, audited contract.",
   openGraph: {
-    title: "Settla: Get paid in USDC",
-    description: "Invoices for small businesses, paid in USDC straight to your wallet on Arc.",
+    title: "Settla 2.0: Invoices & Recurring Payments in USDC",
+    description: "Create one-off invoices or recurring subscription plans — paid in USDC on Arc. Non-custodial, audited, sub-second finality.",
     type: "website",
   },
 };
@@ -38,8 +38,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <footer className="border-t border-line/70">
             <div className="mx-auto flex max-w-5xl flex-col items-center gap-2 px-5 py-6 text-center text-sm text-muted md:flex-row md:justify-between md:gap-6">
               <span>Non-custodial. Payments go straight to the merchant.</span>
-              <span>Unaudited proof of concept on Arc.</span>
-              <a href="https://github.com/Xyrelix/Settla" className="underline-offset-4 hover:text-ink hover:underline">
+              <span>SettlaV2 contract audited · deployed on Arc Testnet.</span>
+              <a href="https://github.com/Xyrelix/Settla-2.0" className="underline-offset-4 hover:text-ink hover:underline">
                 Source on GitHub
               </a>
             </div>
