@@ -1,11 +1,10 @@
+import React from "react";
 import Link from "next/link";
-import { StatusBadge } from "@/components/InvoiceCard";
 import { CtaLink } from "@/components/CtaLink";
-import { GlobeBackdrop } from "@/components/GlobeBackdrop";
 import { CountUp } from "@/components/CountUp";
 import { Magnetic } from "@/components/Magnetic";
 import { SpotlightGrid } from "@/components/Spotlight";
-import { Status } from "@/lib/settla";
+import { CardDeck } from "@/components/CardDeck";
 
 const STEPS = [
   ["Write the invoice", "Type the amount and what it's for. One tap in your wallet puts it on Arc."],
@@ -20,7 +19,7 @@ const GOOD_TO_KNOW = [
   ["It's unaudited.", "Settla is a proof of concept and hasn't had a security audit. Start with small amounts."],
 ];
 
-const V2_FEATURES = [
+const V2_FEATURES: { title: string; body: string; icon: React.ReactNode }[] = [
   {
     title: "Recurring subscription plans",
     body: "Create a plan with an amount and interval. Customers subscribe once — charges happen automatically every interval, straight to your wallet.",
@@ -43,55 +42,6 @@ const V2_FEATURES = [
   },
 ];
 
-function ReceiptPreview() {
-  return (
-    <div aria-hidden className="rise relative mx-auto w-full max-w-sm select-none py-6 [animation-delay:350ms]">
-      <GlobeBackdrop className="pointer-events-none absolute left-[68%] top-[30%] -z-10 size-[min(34rem,120vw)] -translate-x-1/2 -translate-y-1/2 text-accent opacity-60" />
-      <div className="card absolute inset-x-6 top-0 h-full translate-y-3 opacity-70 md:translate-y-0 md:-rotate-3" />
-      <div className="card relative overflow-hidden md:rotate-1">
-        <div className="space-y-5 p-7">
-          <div className="flex items-center justify-between">
-            <span className="amount text-sm text-muted">Invoice #1042</span>
-            <span className="grid justify-items-end">
-              <span className="receipt-leave col-start-1 row-start-1">
-                <StatusBadge status={Status.Open} />
-              </span>
-              <span className="receipt-enter col-start-1 row-start-1">
-                <StatusBadge status={Status.Paid} />
-              </span>
-            </span>
-          </div>
-          <div className="space-y-1.5">
-            <p className="font-medium">Sourdough loaf &amp; 2 flat whites</p>
-            <p className="amount text-5xl font-semibold leading-none">18.50</p>
-            <p className="text-sm font-semibold text-muted">USDC on Arc</p>
-          </div>
-        </div>
-        <div className="relative h-0 border-t-2 border-dashed border-line">
-          <span className="absolute -left-3 -top-3 size-6 rounded-full bg-paper" />
-          <span className="absolute -right-3 -top-3 size-6 rounded-full bg-paper" />
-        </div>
-        <div className="space-y-3 p-7 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted">Pay to</span>
-            <span className="font-mono">0x7a3F…c91E</span>
-          </div>
-          <div className="grid">
-            <div className="receipt-pending col-start-1 row-start-1 space-y-2 rounded-xl bg-accent-soft px-4 py-2.5">
-              <p className="font-medium text-accent-hover">Customer is paying…</p>
-              <div className="h-1 overflow-hidden rounded-full bg-accent/15">
-                <div className="receipt-bar h-full rounded-full bg-accent" />
-              </div>
-            </div>
-            <p className="receipt-enter col-start-1 row-start-1 self-center rounded-xl bg-paid-soft px-4 py-2.5 font-medium text-paid">
-              Paid 0.8 seconds after scanning.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function Landing() {
   return (
@@ -132,7 +82,7 @@ export default function Landing() {
             </Link>
           </div>
         </div>
-        <ReceiptPreview />
+        <CardDeck />
       </section>
 
       {/* ── WHAT'S NEW IN 2.0 ── */}

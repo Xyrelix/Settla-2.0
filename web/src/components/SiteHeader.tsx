@@ -10,7 +10,15 @@ export function SiteHeader({ nav, action }: { nav?: React.ReactNode; action: Rea
           {/* Mark artwork matches the theme; the name is set in the site's own Fraunces. */}
           <Image src="/mark-light.png" alt="" width={185} height={185} priority className="size-8 dark:hidden" />
           <Image src="/mark-dark.png" alt="" width={186} height={186} priority className="hidden size-8 dark:block" />
-          <span className="hidden min-[360px]:inline">Settla</span>
+          <span className="hidden min-[360px]:inline">
+            Settla{" "}
+            <span
+              className="relative -top-px ml-0.5 inline-block rounded-md px-1.5 py-0.5 font-sans text-[0.6rem] font-bold uppercase tracking-widest"
+              style={{ background: "var(--sub-soft)", color: "var(--sub)" }}
+            >
+              2.0
+            </span>
+          </span>
         </Link>
         <div>{nav}</div>
         <div className="justify-self-end">{action}</div>

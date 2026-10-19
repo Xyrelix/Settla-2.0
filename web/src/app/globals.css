@@ -437,6 +437,29 @@
   transition: translate 450ms var(--ease-spring);
 }
 
+/* Playing-card deck: cards fan out on hover/focus-within */
+@utility card-deck {
+  position: relative;
+  transition: none;
+}
+
+@utility card-back {
+  position: absolute;
+  inset: 0;
+  transition:
+    transform 450ms var(--ease-spring),
+    opacity 350ms ease;
+  transform-origin: bottom center;
+  will-change: transform;
+}
+
+@utility card-front {
+  position: relative;
+  transition: transform 450ms var(--ease-spring);
+  transform-origin: bottom center;
+  will-change: transform;
+}
+
 @utility eyebrow {
   @apply inline-flex w-fit items-center rounded-full bg-accent-soft px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-accent-hover;
 }
