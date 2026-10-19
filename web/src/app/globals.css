@@ -304,11 +304,10 @@
   background: radial-gradient(closest-side, color-mix(in oklab, var(--accent-soft) 85%, transparent), transparent);
 }
 
-/* "How it works": each connector fills as its step scrolls past; numbers light up. */
-@keyframes step-fill {
-  from {
-    scale: 1 0;
-  }
+/* "How it works": traveling color chases itself down each connector line. */
+@keyframes step-travel {
+  0%   { background-position: 0 -100%; }
+  100% { background-position: 0 200%; }
 }
 
 @keyframes step-on {
@@ -319,14 +318,17 @@
 }
 
 @utility step-fill {
-  transform-origin: top;
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      animation: step-fill linear both;
-      animation-timeline: view();
-      animation-range: cover 30% cover 60%;
-    }
-  }
+  /* travelling highlight — color moves continuously down the line */
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--step-color, var(--accent)) 40%,
+    var(--step-color, var(--accent)) 60%,
+    transparent 100%
+  );
+  background-size: 100% 60%;
+  background-repeat: no-repeat;
+  animation: step-travel 1.6s linear infinite;
 }
 
 @utility step-num {

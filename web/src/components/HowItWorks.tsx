@@ -122,13 +122,9 @@ export function HowItWorks() {
               {!isLast && (
                 <span
                   aria-hidden
-                  className="absolute -bottom-8 left-6 top-12 w-0.5 -translate-x-1/2 overflow-hidden bg-line"
-                >
-                  <span
-                    className="step-fill block size-full"
-                    style={{ background: accent }}
-                  />
-                </span>
+                  className="step-fill absolute -bottom-8 left-6 top-12 w-0.5 -translate-x-1/2 bg-line"
+                  style={{ "--step-color": accent } as React.CSSProperties}
+                />
               )}
               <span
                 className="step-num amount relative z-10 grid size-12 shrink-0 place-items-center rounded-2xl text-xl font-semibold transition-colors duration-300"
