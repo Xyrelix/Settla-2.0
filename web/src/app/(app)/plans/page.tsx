@@ -34,7 +34,10 @@ export default function PlansPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="space-y-1">
+        <div className="space-y-2">
+          <span className="inline-flex w-fit items-center rounded-full bg-sub-soft px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-sub">
+            Settla 2.0
+          </span>
           <h1 className="font-display text-4xl font-semibold tracking-tight">Subscription plans</h1>
           {planIds && planIds.length > 0 && (
             <p className="text-muted">

@@ -115,11 +115,22 @@ export default function PlanPage() {
         <article className="card rise overflow-hidden">
           <div className="space-y-6 p-6 sm:p-8">
             <div className="flex items-center justify-between">
-              <span className="amount text-sm text-muted">Plan #{planId.toString()}</span>
-              <span className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-semibold ${plan.active ? "bg-paid-soft text-paid" : "bg-line/60 text-muted"}`}>
-                <span aria-hidden className="size-1.5 rounded-full bg-current" />
-                {plan.active ? "Active" : "Inactive"}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="amount text-sm text-muted">Plan #{planId.toString()}</span>
+                <span
+                  className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-semibold"
+                  style={plan.active
+                    ? { background: "var(--sub-soft)", color: "var(--sub)" }
+                    : { background: "var(--line)", color: "var(--muted)" }}
+                >
+                  {/* ↻ repeat */}
+                  <svg className="size-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M2.5 8A5.5 5.5 0 0 1 13 5.5M13 5.5V3m0 2.5H10.5" />
+                    <path d="M13.5 8A5.5 5.5 0 0 1 3 10.5M3 10.5V13m0-2.5H5.5" />
+                  </svg>
+                  {plan.active ? "Recurring" : "Inactive"}
+                </span>
+              </div>
             </div>
             <div className="space-y-2">
               {plan.memo && <p className="break-words text-lg font-medium">{plan.memo}</p>}
@@ -157,7 +168,7 @@ export default function PlanPage() {
             )}
             {!isMerchant && myActiveSub && (
               <div className="space-y-3">
-                <p className="rounded-xl bg-paid-soft px-4 py-3 text-sm font-medium text-paid">
+                <p className="rounded-xl px-4 py-3 text-sm font-medium" style={{ background: "var(--sub-soft)", color: "var(--sub)" }}>
                   You&apos;re subscribed. Charge #{myActiveSub.chargeCount} of {plan.maxCharges === 0 ? "∞" : plan.maxCharges}.
                 </p>
                 <button

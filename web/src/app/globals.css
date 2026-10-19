@@ -15,6 +15,9 @@
   --paid-soft: #e4eed9;
   --danger: #a52a3c; /* brick crimson: clearly apart from the terracotta accent */
   --danger-soft: #f9e2e5;
+  --sub: #4a3f8f;        /* indigo — subscription / recurring, distinct from terracotta + green */
+  --sub-soft: #eceaf8;
+  --sub-border: #c5c0ef;
   --shadow: 42 33 24;
   --tray: rgb(42 33 24 / 0.018);
   --hairline: rgb(42 33 24 / 0.06);
@@ -37,6 +40,9 @@
     --paid-soft: #25321f;
     --danger: #ec8e98;
     --danger-soft: #3a1c21;
+    --sub: #9d96e8;
+    --sub-soft: #1e1b3a;
+    --sub-border: #4a3f8f;
     --shadow: 0 0 0;
     --tray: rgb(255 250 240 / 0.025);
     --hairline: rgb(255 250 240 / 0.08);
@@ -59,6 +65,9 @@
   --color-paid-soft: var(--paid-soft);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
+  --color-sub: var(--sub);
+  --color-sub-soft: var(--sub-soft);
+  --color-sub-border: var(--sub-border);
   --font-sans: var(--font-body);
   --font-display: var(--font-serif);
   /* One curve for everything: quick start, long soft settle. */

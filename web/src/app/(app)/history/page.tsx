@@ -12,7 +12,6 @@ interface PaymentRecord {
   amount: bigint;
   blockNumber: bigint;
   txHash: `0x${string}`;
-  // fetched separately
   memo?: string;
   paidAt?: bigint;
 }
@@ -49,14 +48,12 @@ export default function PaymentHistory() {
 
   useEffect(() => {
     if (!address || !SETTLA_ADDRESS || !client) return;
-
     let cancelled = false;
     setLoading(true);
     setError(null);
 
     async function load() {
       try {
-        // Fetch all Settled events where payer == connected wallet
         const logs = await client!.getLogs({
           address: SETTLA_ADDRESS,
           event: {
@@ -73,10 +70,8 @@ export default function PaymentHistory() {
           fromBlock: 0n,
           toBlock: "latest",
         });
-
         if (cancelled) return;
 
-        // Build initial records from logs (newest first)
         const base: PaymentRecord[] = [...logs].reverse().map((l) => ({
           invoiceId: l.args.id as bigint,
           merchant: l.args.merchant as `0x${string}`,
@@ -88,7 +83,6 @@ export default function PaymentHistory() {
         setRecords(base);
         setLoading(false);
 
-        // Enrich each record with memo + paidAt from getInvoice (fire-and-forget per record)
         base.forEach(async (r, i) => {
           try {
             const inv = await client!.readContract({
@@ -105,9 +99,7 @@ export default function PaymentHistory() {
                 j === i ? { ...p, memo: invData.memo, paidAt: invData.paidAt } : p
               )
             );
-          } catch {
-            // enrichment failed silently — base record still shows
-          }
+          } catch { /* enrichment silent fail */ }
         });
       } catch (err) {
         if (!cancelled) {
@@ -125,7 +117,14 @@ export default function PaymentHistory() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
-      <div className="space-y-1">
+      {/* Page header */}
+      <div className="space-y-2">
+        <span
+          className="inline-flex w-fit items-center rounded-full px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.18em]"
+          style={{ background: "var(--sub-soft)", color: "var(--sub)" }}
+        >
+          Settla 2.0
+        </span>
         <h1 className="font-display text-4xl font-semibold tracking-tight">Payment history</h1>
         {records.length > 0 && (
           <p className="text-muted">
@@ -142,9 +141,13 @@ export default function PaymentHistory() {
       )}
 
       {isConnected && loading && (
-        <ul className="space-y-3" aria-busy="true" aria-label="Loading history…">
+        <ul className="space-y-0 pl-6" aria-busy="true" aria-label="Loading history…">
           {[0, 1, 2].map((i) => (
-            <li key={i} className="card h-[5.5rem] animate-pulse opacity-60" />
+            <li key={i} className="relative pb-6">
+              <span className="absolute left-0 top-2 -translate-x-1/2 size-3 rounded-full bg-line" aria-hidden />
+              {i < 2 && <span className="absolute left-0 top-5 bottom-0 w-px bg-line" aria-hidden />}
+              <div className="card ml-4 h-16 animate-pulse opacity-60" />
+            </li>
           ))}
         </ul>
       )}
@@ -163,59 +166,80 @@ export default function PaymentHistory() {
         />
       )}
 
+      {/* Timeline list */}
       {records.length > 0 && (
-        <ul className="space-y-3">
-          {records.map((r) => (
-            <li key={r.txHash} className="card p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 space-y-1.5">
-                  <div className="flex items-center gap-2.5">
-                    <span className="amount text-sm text-muted">Invoice #{r.invoiceId.toString()}</span>
-                    <span className="inline-flex items-center gap-1.5 rounded-md bg-paid-soft px-2 py-0.5 text-xs font-semibold text-paid">
-                      <span aria-hidden className="size-1.5 rounded-full bg-current" />
-                      Paid
-                    </span>
+        <ul className="space-y-0 pl-5">
+          {records.map((r, i) => (
+            <li key={r.txHash} className="relative pb-6">
+              {/* vertical connector line — hidden on last item */}
+              {i < records.length - 1 && (
+                <span
+                  className="absolute left-0 top-5 bottom-0 w-px"
+                  style={{ background: "var(--line)" }}
+                  aria-hidden
+                />
+              )}
+              {/* timeline dot */}
+              <span
+                className="absolute left-0 top-2 -translate-x-1/2 size-3 rounded-full border-2"
+                style={{
+                  background: "var(--paid-soft)",
+                  borderColor: "var(--paid)",
+                }}
+                aria-hidden
+              />
+
+              {/* card */}
+              <div className="card ml-5 p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 space-y-1.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="amount text-sm text-muted">Invoice #{r.invoiceId.toString()}</span>
+                      <span className="inline-flex items-center gap-1.5 rounded-md bg-paid-soft px-2 py-0.5 text-xs font-semibold text-paid">
+                        <span aria-hidden className="size-1.5 rounded-full bg-current" />
+                        Settled
+                      </span>
+                    </div>
+                    <p className="truncate font-medium">
+                      {r.memo ?? <span className="animate-pulse text-muted">Loading…</span>}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted">
+                      {r.paidAt && <span>{date(r.paidAt)}</span>}
+                      <span>
+                        To{" "}
+                        <a
+                          href={`${explorerBase}/address/${r.merchant}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-mono underline underline-offset-2 hover:text-ink"
+                        >
+                          {short(r.merchant)}
+                        </a>
+                      </span>
+                    </div>
                   </div>
-                  <p className="truncate font-medium">
-                    {r.memo ?? <span className="animate-pulse text-muted">Loading…</span>}
-                  </p>
-                  <div className="flex items-center gap-3 text-xs text-muted">
-                    {r.paidAt ? (
-                      <span>{date(r.paidAt)}</span>
-                    ) : null}
-                    <span>
-                      To{" "}
+
+                  <div className="shrink-0 text-right">
+                    <p className="amount text-xl font-semibold">
+                      {formatUsdc(r.amount)}{" "}
+                      <span className="font-sans text-xs font-semibold text-muted">USDC</span>
+                    </p>
+                    <div className="-mr-2.5 mt-1 flex items-center justify-end gap-0.5">
+                      <Link
+                        href={`/pay/${r.invoiceId}`}
+                        className="inline-flex min-h-10 items-center rounded-full px-2.5 text-sm font-medium text-accent underline-offset-4 hover:underline"
+                      >
+                        View
+                      </Link>
                       <a
-                        href={`${explorerBase}/address/${r.merchant}`}
+                        href={`${explorerBase}/tx/${r.txHash}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="font-mono underline underline-offset-2 hover:text-ink"
+                        className="inline-flex min-h-10 items-center rounded-full px-2.5 text-sm text-muted hover:text-ink"
                       >
-                        {short(r.merchant)}
+                        Tx ↗
                       </a>
-                    </span>
-                  </div>
-                </div>
-                <div className="shrink-0 text-right">
-                  <p className="amount text-xl font-semibold">
-                    {formatUsdc(r.amount)}{" "}
-                    <span className="font-sans text-xs font-semibold text-muted">USDC</span>
-                  </p>
-                  <div className="-mr-2.5 mt-1 flex items-center justify-end gap-0.5">
-                    <Link
-                      href={`/pay/${r.invoiceId}`}
-                      className="inline-flex min-h-10 items-center rounded-full px-2.5 text-sm font-medium text-accent underline-offset-4 hover:underline"
-                    >
-                      View
-                    </Link>
-                    <a
-                      href={`${explorerBase}/tx/${r.txHash}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex min-h-10 items-center rounded-full px-2.5 text-sm text-muted hover:text-ink"
-                    >
-                      Tx
-                    </a>
+                    </div>
                   </div>
                 </div>
               </div>
