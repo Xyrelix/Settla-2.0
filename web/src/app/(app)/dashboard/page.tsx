@@ -34,6 +34,7 @@ export default function Dashboard() {
     <div className="mx-auto max-w-3xl space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-1">
+          <p className="eyebrow text-xs" style={{ color: "var(--accent)" }}>Settla v1 · One-off invoices</p>
           <h1 className="font-display text-4xl font-semibold tracking-tight">Your invoices</h1>
           {ids && ids.length > 0 && (
             <p className="text-muted">
