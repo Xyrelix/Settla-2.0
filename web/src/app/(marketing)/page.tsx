@@ -61,30 +61,34 @@ export default function Landing() {
             automatically. The money goes straight to your wallet in USDC, with no card fees and nobody
             holding it in between.
           </p>
-          <div className="rise flex flex-wrap items-center gap-4 [animation-delay:240ms]">
-            <Magnetic>
-              <CtaLink href="/new" large>
-                Create an invoice
-              </CtaLink>
-            </Magnetic>
-            <Magnetic>
-              <CtaLink href="/plans/new" large>
-                Create a plan
-              </CtaLink>
-            </Magnetic>
-            <Link
-              href="/pay/1"
-              className="font-medium text-ink underline decoration-line decoration-2 underline-offset-[6px] transition hover:decoration-accent"
-            >
-              See a paid invoice
-            </Link>
-            <Link
-              href="/plans/3"
-              className="font-medium underline decoration-2 underline-offset-[6px] transition"
-              style={{ color: "var(--sub)", textDecorationColor: "var(--sub)", opacity: 0.85 }}
-            >
-              See a live plan ↻
-            </Link>
+          <div className="rise flex flex-col gap-3 [animation-delay:240ms]">
+            <div className="flex flex-wrap items-center gap-4">
+              <Magnetic>
+                <CtaLink href="/new" large>
+                  Create an invoice
+                </CtaLink>
+              </Magnetic>
+              <Link
+                href="/pay/1"
+                className="font-medium text-ink underline decoration-line decoration-2 underline-offset-[6px] transition hover:decoration-accent"
+              >
+                See a paid invoice
+              </Link>
+            </div>
+            <div className="flex flex-wrap items-center gap-4">
+              <Magnetic>
+                <CtaLink href="/plans/new" large>
+                  Create a plan
+                </CtaLink>
+              </Magnetic>
+              <Link
+                href="/plans/3"
+                className="font-medium underline decoration-2 underline-offset-[6px] transition"
+                style={{ color: "var(--sub)", textDecorationColor: "var(--sub)", opacity: 0.85 }}
+              >
+                See a live plan ↻
+              </Link>
+            </div>
           </div>
         </div>
         <CardDeck />
