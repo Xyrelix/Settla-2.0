@@ -1,7 +1,8 @@
 import { defineChain } from "viem";
 
-// NEXT_PUBLIC_ARC_NETWORK=testnet points the app at Arc testnet for dry runs.
-const testnet = process.env.NEXT_PUBLIC_ARC_NETWORK === "testnet";
+// NEXT_PUBLIC_ARC_NETWORK=testnet points the app at Arc testnet.
+// Defaults to testnet since SettlaV2 is deployed there.
+const testnet = process.env.NEXT_PUBLIC_ARC_NETWORK !== "mainnet";
 const explorer = testnet ? "https://explorer.testnet.arc.io" : "https://explorer.arc.io";
 
 export const arc = defineChain({

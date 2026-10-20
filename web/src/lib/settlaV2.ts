@@ -51,7 +51,9 @@ export const settlaV2Abi = [
 const v2Env = process.env.NEXT_PUBLIC_SETTLA_V2_ADDRESS;
 const usdcEnv = process.env.NEXT_PUBLIC_USDC_ADDRESS;
 
-export const SETTLA_V2_ADDRESS = (v2Env && isAddress(v2Env) ? v2Env : undefined) as Address | undefined;
+// Falls back to the deployed Arc Testnet address so the app works without the env var set.
+export const SETTLA_V2_ADDRESS: Address =
+  v2Env && isAddress(v2Env) ? v2Env : "0x581834a3cbaf0730d50c081b879f78efc331c760";
 export const USDC_ADDRESS: Address =
   usdcEnv && isAddress(usdcEnv) ? usdcEnv : "0x3600000000000000000000000000000000000000";
 export const USDC_DECIMALS = 6;
