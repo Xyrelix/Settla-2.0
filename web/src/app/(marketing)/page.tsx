@@ -78,6 +78,13 @@ export default function Landing() {
             >
               See a paid invoice
             </Link>
+            <Link
+              href="/plans/3"
+              className="font-medium underline decoration-2 underline-offset-[6px] transition"
+              style={{ color: "var(--sub)", textDecorationColor: "var(--sub)", opacity: 0.85 }}
+            >
+              See a live plan ↻
+            </Link>
           </div>
         </div>
         <CardDeck />
