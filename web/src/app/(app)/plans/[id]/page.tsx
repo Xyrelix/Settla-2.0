@@ -43,14 +43,14 @@ export default function PlanPage() {
   const [charging, setCharging] = useState(false);
   const [chargeError, setChargeError] = useState<string | null>(null);
 
-  const { data: plan, isLoading: planLoading } = useReadContract({
+  const { data: plan, isLoading: planLoading, isError: planError } = useReadContract({
     address: SETTLA_V2_ADDRESS,
     abi: settlaV2Abi,
     functionName: "getPlan",
     args: [planId],
     chainId: arc.id,
-    query: { enabled: validId && !!SETTLA_V2_ADDRESS },
-  }) as { data: PlanData | undefined; isLoading: boolean };
+    query: { enabled: validId, retry: 3, retryDelay: 1000 },
+  }) as { data: PlanData | undefined; isLoading: boolean; isError: boolean };
 
   // My subscription for this plan (check subscriptionsOf and find matching planId)
   const { data: mySubIds, refetch: refetchSubs } = useReadContract({
@@ -102,6 +102,12 @@ export default function PlanPage() {
   }
 
   if (!validId) return <Message title="Plan not found" body="Check the link with whoever sent it to you." />;
+  if (planError) return (
+    <Message
+      title="Couldn't load this plan"
+      body="Make sure your wallet is connected to Arc Testnet (chain ID 5042002) and try refreshing. If the problem persists, check that your browser isn't blocking the Arc RPC."
+    />
+  );
   if (planLoading || !plan) {
     return <div className="card mx-auto h-96 max-w-md animate-pulse opacity-60" aria-busy="true" />;
   }
