@@ -62,7 +62,9 @@ export default function PaymentHistory() {
       try {
         // Use a bounded lookback (last 500k blocks) to avoid RPC range errors
         const head = await arcClient.getBlockNumber();
-        const fromBlock = head > 500000n ? head - 500000n : 0n;
+        // Arc Testnet RPC caps getLogs to ~4 000 blocks per call
+        const LOOKBACK = 4000n;
+        const fromBlock = head > LOOKBACK ? head - LOOKBACK : 0n;
 
         const logs = await arcClient.getLogs({
           address: SETTLA_ADDRESS,
