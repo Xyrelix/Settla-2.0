@@ -1,10 +1,15 @@
 "use client";
-import { useAccount, usePublicClient } from "wagmi";
+import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { createPublicClient, http } from "viem";
 import { arc } from "@/lib/arc";
 import { settlaAbi, SETTLA_ADDRESS, formatUsdc, Status } from "@/lib/settla";
 import { CtaLink } from "@/components/CtaLink";
+
+// Always-available client pointed directly at Arc Testnet RPC —
+// independent of which chain the user's wallet is currently on.
+const arcClient = createPublicClient({ chain: arc, transport: http() });
 
 interface PaymentRecord {
   invoiceId: bigint;
@@ -40,7 +45,6 @@ function EmptyState({ title, body, cta }: { title: string; body: string; cta?: b
 
 export default function PaymentHistory() {
   const { address, isConnected } = useAccount();
-  const client = usePublicClient({ chainId: arc.id });
 
   const [records, setRecords] = useState<PaymentRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -49,7 +53,7 @@ export default function PaymentHistory() {
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    if (!address || !SETTLA_ADDRESS || !client) return;
+    if (!address || !SETTLA_ADDRESS) return;
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -57,10 +61,10 @@ export default function PaymentHistory() {
     async function load() {
       try {
         // Use a bounded lookback (last 500k blocks) to avoid RPC range errors
-        const head = await client!.getBlockNumber();
+        const head = await arcClient.getBlockNumber();
         const fromBlock = head > 500000n ? head - 500000n : 0n;
 
-        const logs = await client!.getLogs({
+        const logs = await arcClient.getLogs({
           address: SETTLA_ADDRESS,
           event: {
             type: "event",
@@ -91,7 +95,7 @@ export default function PaymentHistory() {
 
         base.forEach(async (r, i) => {
           try {
-            const inv = await client!.readContract({
+            const inv = await arcClient.readContract({
               address: SETTLA_ADDRESS!,
               abi: settlaAbi,
               functionName: "getInvoice",
@@ -117,7 +121,7 @@ export default function PaymentHistory() {
 
     void load();
     return () => { cancelled = true; };
-  }, [address, client, retryCount]);
+  }, [address, retryCount]);
 
   const explorerBase = arc.blockExplorers.default.url;
 
@@ -163,9 +167,7 @@ export default function PaymentHistory() {
           <p className="text-sm font-medium" style={{ color: "var(--danger, #c0392b)" }}>
             RPC request failed — {error}
           </p>
-          <p className="text-sm text-muted">
-            Make sure Brave Shields are off for this site, then try again.
-          </p>
+          <p className="text-sm text-muted">Check your connection and try again.</p>
           <button
             className="btn-quiet text-sm"
             onClick={() => setRetryCount(c => c + 1)}
