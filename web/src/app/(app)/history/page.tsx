@@ -46,6 +46,8 @@ export default function PaymentHistory() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [retryCount, setRetryCount] = useState(0);
+
   useEffect(() => {
     if (!address || !SETTLA_ADDRESS || !client) return;
     let cancelled = false;
@@ -54,6 +56,10 @@ export default function PaymentHistory() {
 
     async function load() {
       try {
+        // Use a bounded lookback (last 500k blocks) to avoid RPC range errors
+        const head = await client!.getBlockNumber();
+        const fromBlock = head > 500000n ? head - 500000n : 0n;
+
         const logs = await client!.getLogs({
           address: SETTLA_ADDRESS,
           event: {
@@ -67,7 +73,7 @@ export default function PaymentHistory() {
             ],
           },
           args: { payer: address },
-          fromBlock: 0n,
+          fromBlock,
           toBlock: "latest",
         });
         if (cancelled) return;
@@ -111,7 +117,7 @@ export default function PaymentHistory() {
 
     void load();
     return () => { cancelled = true; };
-  }, [address, client]);
+  }, [address, client, retryCount]);
 
   const explorerBase = arc.blockExplorers.default.url;
 
@@ -153,9 +159,20 @@ export default function PaymentHistory() {
       )}
 
       {error && (
-        <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger">
-          {error} — refresh to try again.
-        </p>
+        <div role="alert" className="card flex flex-col items-start gap-3 p-6">
+          <p className="text-sm font-medium" style={{ color: "var(--danger, #c0392b)" }}>
+            RPC request failed — {error}
+          </p>
+          <p className="text-sm text-muted">
+            Make sure Brave Shields are off for this site, then try again.
+          </p>
+          <button
+            className="btn-quiet text-sm"
+            onClick={() => setRetryCount(c => c + 1)}
+          >
+            Try again
+          </button>
+        </div>
       )}
 
       {isConnected && !loading && records.length === 0 && !error && (
