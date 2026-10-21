@@ -127,7 +127,7 @@ export function HowItWorks() {
                 />
               )}
               <span
-                className="step-num amount relative z-10 grid size-12 shrink-0 place-items-center rounded-2xl text-xl font-semibold transition-colors duration-300"
+                className="amount relative z-10 grid size-12 shrink-0 place-items-center rounded-2xl text-xl font-semibold transition-colors duration-300"
                 style={{ background: accentSoft, color: accentInk }}
               >
                 {i + 1}

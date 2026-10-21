@@ -310,13 +310,6 @@
   100% { background-position: 0 200%; }
 }
 
-@keyframes step-on {
-  to {
-    background-color: var(--accent);
-    color: var(--accent-ink);
-  }
-}
-
 @utility step-fill {
   /* travelling highlight — color moves continuously down the line */
   background-image: linear-gradient(
@@ -331,15 +324,7 @@
   animation: step-travel 1.6s linear infinite;
 }
 
-@utility step-num {
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      animation: step-on linear both;
-      animation-timeline: view();
-      animation-range: cover 38% cover 46%;
-    }
-  }
-}
+/* step-num: color comes from inline styles set by HowItWorks.tsx */
 
 /* Finality timeline: dots fill in order as the card scrolls in (timeline set on the list). */
 @keyframes dot-fill {
