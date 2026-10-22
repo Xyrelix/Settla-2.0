@@ -214,4 +214,5 @@ Share `https://<your-app>/plans/<planId>` for subscription plans.
 - [x] Payment history dashboard
 - [x] Public GitHub repo (`Xyrelix/Settla-2.0`) with README, IMPLEMENTATION.md, INTEGRATION.md
 - [x] Live frontend on Vercel — [settla-two.vercel.app](https://settla-two.vercel.app)
+- [x] Demo video — [youtu.be/Lc_XHh5T5N8](https://youtu.be/Lc_XHh5T5N8)
 - [x] Public builder profile: [@Dayston_](https://x.com/Dayston_)

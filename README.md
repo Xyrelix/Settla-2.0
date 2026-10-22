@@ -17,7 +17,8 @@ A merchant creates an invoice or a subscription plan, shares a link or QR code, 
 | Settla contract (Arc mainnet) | [`0x70425dE60f324D888997f4E54d841cde77401386`](https://explorer.arc.io/address/0x70425dE60f324D888997f4E54d841cde77401386) |
 | SettlaV2 contract (Arc mainnet) | [`0x9FcBc3D00C66a50fB2350f1e4630D89A9AE147a5`](https://explorer.arc.io/address/0x9FcBc3D00C66a50fB2350f1e4630D89A9AE147a5) |
 | SettlaV2 deploy tx | [`0x20f68d5d93d00e7bda714d3c345448dc8537411077e6112c8e3226a5194e98cd`](https://explorer.arc.io/tx/0x20f68d5d93d00e7bda714d3c345448dc8537411077e6112c8e3226a5194e98cd) |
-| Demo video | [59 s: create, scan, pay, settled](https://youtu.be/tiOl89qWRk4) ([also on X](https://x.com/Dayston_/status/2110045154413310349)) |
+| Demo video (v1) | [59 s: create, scan, pay, settled](https://youtu.be/tiOl89qWRk4) |
+| Demo video (v2) | [Settla 2.0 — recurring subscriptions walkthrough](https://youtu.be/Lc_XHh5T5N8) |
 | Demo invoice | [settla-seven.vercel.app/pay/1](https://settla-seven.vercel.app/pay/1) |
 | Builder | [@Dayston_](https://x.com/Dayston_) |
 
