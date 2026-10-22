@@ -72,9 +72,11 @@ contract Settla {
 
 ---
 
-## Contract 2: `SettlaV2.sol` (Arc testnet — Settla 2.0)
+## Contract 2: `SettlaV2.sol` (Arc Mainnet — Settla 2.0)
 
-**Address:** `0x581834a3cbaf0730d50c081b879f78efc331c760`
+**Testnet address:** `0x581834a3cbaf0730d50c081b879f78efc331c760`
+**Mainnet address:** `0x9FcBc3D00C66a50fB2350f1e4630D89A9AE147a5`
+**Mainnet deploy tx:** `0x20f68d5d93d00e7bda714d3c345448dc8537411077e6112c8e3226a5194e98cd`
 **Source:** `contracts/SettlaV2.sol` (Foundry)
 **Compiler:** Solidity 0.8.24, EVM Paris, no OpenZeppelin imports
 
@@ -197,4 +199,4 @@ The ABI is inlined directly in `web/src/lib/settlaV2.ts` — no build artifact d
 | Phase | Work |
 | --- | --- |
 | Oct 4–13, 2026 | Original Settla: contract, tests, deployment, frontend, Vercel |
-| Oct 14–16, 2026 | Settla 2.0: SettlaV2 contract (written, audited 3 rounds, deployed Arc testnet), recurring plan UI, payment history, docs |
+| Oct 14–16, 2026 | Settla 2.0: SettlaV2 contract (written, audited 3 rounds, deployed Arc testnet + mainnet), recurring plan UI, payment history, docs |

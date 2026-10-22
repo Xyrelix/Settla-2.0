@@ -65,9 +65,10 @@ The payer must call `approve(settlaAddress, amount)` on the USDC contract before
 
 ---
 
-## SettlaV2 contract interface (Arc testnet)
+## SettlaV2 contract interface (Arc Mainnet)
 
-**Address:** `0x581834a3cbaf0730d50c081b879f78efc331c760`
+**Mainnet address:** `0x9FcBc3D00C66a50fB2350f1e4630D89A9AE147a5`
+**Testnet address:** `0x581834a3cbaf0730d50c081b879f78efc331c760`
 
 SettlaV2 includes all of the above invoice functions plus the subscription system below.
 
@@ -190,15 +191,16 @@ Share `https://<your-app>/plans/<planId>` for subscription plans.
 
 - Deploy from a fresh wallet funded with only what gas requires.
 - Never commit `.env`; `.gitignore` lists `.env`, `.env.*` (except `.env.example`), `node_modules`, `artifacts`, `cache`, `.next`.
-- Both contracts are proof-of-concept deployments. SettlaV2 was reviewed but not formally audited by an external firm. Keep amounts small on testnet.
+- SettlaV2 underwent a 3-round security review with 4 High findings fixed before mainnet deployment. Still unaudited by a formal external firm — keep amounts reasonable.
 
 ---
 
-## Proof of use (Settla 2.0 — Arc testnet)
+## Proof of use (Settla 2.0 — Arc Mainnet)
 
 | Action | Contract | Transaction |
 | --- | --- | --- |
-| Create subscription plan | SettlaV2 (`0x5818…c760`) | [`0xd114aa0e…17f8c4`](https://explorer.testnet.arc.io/tx/0xd114aa0eaf994090a388c9dad9bb4cc1cbfee79e268f76de3d02062f8917f8c4) |
+| Create subscription plan (testnet) | SettlaV2 (`0x5818…c760`) | [`0xd114aa0e…17f8c4`](https://explorer.testnet.arc.io/tx/0xd114aa0eaf994090a388c9dad9bb4cc1cbfee79e268f76de3d02062f8917f8c4) |
+| Deploy SettlaV2 (mainnet) | SettlaV2 (`0x9FcB…47a5`) | [`0x20f68d5d…e98cd`](https://explorer.arc.io/tx/0x20f68d5d93d00e7bda714d3c345448dc8537411077e6112c8e3226a5194e98cd) |
 
 ---
 
@@ -206,7 +208,8 @@ Share `https://<your-app>/plans/<planId>` for subscription plans.
 
 - [x] Original Settla deployed and working on Arc mainnet
 - [x] At least one real create, pay, and cancel on Arc mainnet with proof of transactions
-- [x] SettlaV2 deployed on Arc testnet with recurring subscription support
+- [x] SettlaV2 deployed on Arc Mainnet with recurring subscription support
+- [x] SettlaV2 mainnet deploy tx on explorer.arc.io
 - [x] At least one real subscription plan created on Arc testnet with proof of transaction
 - [x] Payment history dashboard
 - [x] Public GitHub repo (`Xyrelix/Settla-2.0`) with README, IMPLEMENTATION.md, INTEGRATION.md
